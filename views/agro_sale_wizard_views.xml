@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Wizard form: the New Sale popup — opens as a dialog (target: new) -->
+    <record id="view_agro_sale_wizard_form" model="ir.ui.view">
+        <field name="name">agro.sale.wizard.form</field>
+        <field name="model">agro.sale.wizard</field>
+        <field name="arch" type="xml">
+            <form string="New Sale">
+                <group>
+                    <group>
+                        <field name="customer_id"/>  <!-- defaults to Walk-in Customer -->
+                        <field name="date"/>
+                    </group>
+                    <group>
+                        <!-- Radio buttons: Cash / UPI / Credit / Other -->
+                        <field name="payment_method" widget="radio" options="{'horizontal': true}"/>
+                    </group>
+                </group>
+                <!-- Inline editable table — operator adds items here -->
+                <field name="line_ids" nolabel="1">
+                    <list editable="bottom">
+                        <field name="product_id" options="{'no_create': True}"/>
+                        <field name="lot_id" options="{'no_create': True}"/>  <!-- auto-filled FIFO -->
+                        <field name="available_qty" readonly="1" optional="show"/>
+                        <field name="quantity"/>
+                        <field name="unit_price"/>
+                        <field name="discount_pct" optional="show"/>
+                        <field name="subtotal" readonly="1"/>
+                    </list>
+                </field>
+                <!-- Grand total shown at bottom-right -->
+                <group class="oe_subtotal_footer">
+                    <field name="total_amount" readonly="1" class="oe_subtotal_footer_separator"/>
+                </group>
+                <group>
+                    <field name="notes" placeholder="Notes (printed on receipt)..."/>
+                </group>
+                <footer>
+                    <!-- Confirm creates sale.order, validates delivery, opens receipt PDF -->
+                    <button name="action_confirm" type="object" string="Confirm &amp; Print Receipt"
+                        class="btn-primary" data-hotkey="q"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action: opens the sale wizard as a popup — triggered by New Sale menu -->
+    <record id="action_agro_new_sale" model="ir.actions.act_window">
+        <field name="name">New Sale</field>
+        <field name="res_model">agro.sale.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>
