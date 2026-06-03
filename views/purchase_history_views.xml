@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- List view: read-only purchase history — create/edit disabled, data comes from wizard -->
+    <record id="view_agro_purchase_history_list" model="ir.ui.view">
+        <field name="name">purchase.order.agro.list</field>
+        <field name="model">purchase.order</field>
+        <field name="arch" type="xml">
+            <list string="Purchase History" create="false" edit="false">
+                <field name="name" string="PO No"/>
+                <field name="date_order" string="Date Received"/>
+                <field name="partner_id" string="Supplier"/>
+                <field name="amount_total" string="Total"/>
+                <field name="state" widget="badge"
+                    decoration-success="state == 'purchase'"
+                    decoration-info="state == 'draft'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form view: view a past purchase and its received line items -->
+    <record id="view_agro_purchase_history_form" model="ir.ui.view">
+        <field name="name">purchase.order.agro.form</field>
+        <field name="model">purchase.order</field>
+        <field name="arch" type="xml">
+            <form string="Purchase" create="false">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" string="PO No" readonly="1"/>
+                            <field name="date_order" string="Date" readonly="1"/>
+                            <field name="partner_id" string="Supplier" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="amount_total" string="Total" readonly="1"/>
+                            <field name="state" readonly="1"/>
+                        </group>
+                    </group>
+                    <!-- Line items: what was received, at what cost -->
+                    <field name="order_line" readonly="1">
+                        <list>
+                            <field name="product_id" string="Product"/>
+                            <field name="product_qty" string="Qty"/>
+                            <field name="price_unit" string="Cost Price"/>
+                            <field name="price_subtotal" string="Subtotal"/>
+                        </list>
+                    </field>
+                    <group>
+                        <field name="notes" readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action: opens full purchase history — referenced by History > Purchases menu -->
+    <record id="action_agro_purchase_history" model="ir.actions.act_window">
+        <field name="name">Purchase History</field>
+        <field name="res_model">purchase.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_agro_purchase_history_list')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_agro_purchase_history_form')}),
+        ]"/>
+    </record>
+
+</odoo>
