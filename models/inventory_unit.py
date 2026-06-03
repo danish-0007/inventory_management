@@ -19,8 +19,12 @@ class InventoryUnit(models.Model):
     product_count = fields.Integer(compute='_compute_product_count', string='Products')
 
     def _compute_product_count(self):
-        # Count products using this unit — shown as a stat on the form
+        # Single read_group query for all units — avoids N+1 (one query per unit)
+        counts = self.env['product.template'].read_group(
+            domain=[('agro_unit_id', 'in', self.ids)],
+            fields=['agro_unit_id'],
+            groupby=['agro_unit_id'],
+        )
+        count_map = {row['agro_unit_id'][0]: row['agro_unit_id_count'] for row in counts}
         for unit in self:
-            unit.product_count = self.env['product.template'].search_count([
-                ('agro_unit_id', '=', unit.id)
-            ])
+            unit.product_count = count_map.get(unit.id, 0)
