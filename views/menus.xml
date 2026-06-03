@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Root app entry — shows as top-level icon in Odoo's app menu -->
+    <menuitem id="menu_agro_root"
+        name="Agro Inventory"
+        sequence="10"
+        web_icon="inventory_management,static/description/icon.png"/>
+
+    <!-- Quick-action shortcuts at the top level for daily use -->
+    <menuitem id="menu_agro_new_sale"
+        name="New Sale"
+        parent="menu_agro_root"
+        action="action_agro_new_sale"
+        sequence="5"/>
+
+    <menuitem id="menu_agro_new_purchase"
+        name="Receive Stock"
+        parent="menu_agro_root"
+        action="action_agro_new_purchase"
+        sequence="10"/>
+
+    <!-- Products section: browse, stock overview, low-stock filter -->
+    <menuitem id="menu_agro_products_root"
+        name="Products"
+        parent="menu_agro_root"
+        sequence="20"/>
+
+    <menuitem id="menu_agro_products"
+        name="All Products"
+        parent="menu_agro_products_root"
+        action="action_agro_products"
+        sequence="1"/>
+
+    <menuitem id="menu_agro_stock_overview"
+        name="Stock Overview"
+        parent="menu_agro_products_root"
+        action="action_agro_stock_overview"
+        sequence="2"/>
+
+    <menuitem id="menu_agro_low_stock"
+        name="Low Stock"
+        parent="menu_agro_products_root"
+        action="action_agro_low_stock"
+        sequence="3"/>
+
+    <!-- Batches section: all batches and expiry alert shortcut -->
+    <menuitem id="menu_agro_batches_root"
+        name="Batches"
+        parent="menu_agro_root"
+        sequence="30"/>
+
+    <menuitem id="menu_agro_batches"
+        name="All Batches"
+        parent="menu_agro_batches_root"
+        action="action_agro_batches"
+        sequence="1"/>
+
+    <menuitem id="menu_agro_expiring_batches"
+        name="Expiring Soon"
+        parent="menu_agro_batches_root"
+        action="action_agro_expiring_batches"
+        sequence="2"/>
+
+    <!-- History section: past sales and purchases stored in standard Odoo models -->
+    <menuitem id="menu_agro_history_root"
+        name="History"
+        parent="menu_agro_root"
+        sequence="40"/>
+
+    <menuitem id="menu_agro_sale_history"
+        name="Sales"
+        parent="menu_agro_history_root"
+        action="action_agro_sale_history"
+        sequence="1"/>
+
+    <menuitem id="menu_agro_purchase_history"
+        name="Purchases"
+        parent="menu_agro_history_root"
+        action="action_agro_purchase_history"
+        sequence="2"/>
+
+    <!-- Configuration: units, categories, shop settings — admin use -->
+    <menuitem id="menu_agro_config_root"
+        name="Configuration"
+        parent="menu_agro_root"
+        sequence="100"/>
+
+    <menuitem id="menu_agro_config_units"
+        name="Units"
+        parent="menu_agro_config_root"
+        action="action_inventory_unit"
+        sequence="1"/>
+
+    <menuitem id="menu_agro_config_categories"
+        name="Categories"
+        parent="menu_agro_config_root"
+        action="action_inventory_category"
+        sequence="2"/>
+
+    <menuitem id="menu_agro_config_settings"
+        name="Shop Settings"
+        parent="menu_agro_config_root"
+        action="action_inventory_config"
+        sequence="3"/>
+
+</odoo>

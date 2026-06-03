@@ -1,0 +1,28 @@
+# -*- coding: utf-8 -*-
+{
+    'name': 'Agro & Seeds Shop — Inventory',
+    'summary': 'Custom inventory, sales and purchase management for agro and seeds retail shop',
+    'description': 'Simplified inventory module for a small agro shop. Products, batch tracking, expiry alerts, sales wizard, purchase wizard, and receipt printing.',
+    'author': 'Custom',
+    'category': 'Inventory',
+    'version': '16.0.1.0.0',
+    'depends': ['product', 'stock', 'sale', 'purchase', 'mail'],
+    'data': [
+        'security/ir.model.access.csv',
+        'data/sequence_data.xml',
+        'data/default_data.xml',
+        'views/inventory_unit_views.xml',
+        'views/inventory_category_views.xml',
+        'views/inventory_config_views.xml',
+        'views/product_views.xml',
+        'views/stock_lot_views.xml',
+        'views/agro_sale_wizard_views.xml',
+        'views/agro_purchase_wizard_views.xml',
+        'views/sale_history_views.xml',
+        'views/purchase_history_views.xml',
+        'views/stock_overview_views.xml',
+        'views/menus.xml',
+        'reports/sale_receipt_report.xml',
+        'reports/sale_receipt_template.xml',
+    ],
+}

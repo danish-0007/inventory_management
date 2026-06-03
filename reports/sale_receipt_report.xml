@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Report action: registers the receipt as a printable PDF report on sale.order.
+        - report_name must match the template id in sale_receipt_template.xml
+        - binding_model_id makes it appear in the Print menu on sale.order list/form
+        - paperformat_id: A4 by default — change to custom 80mm for thermal printer
+    -->
+    <record id="report_agro_sale_receipt" model="ir.actions.report">
+        <field name="name">Sale Receipt</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">inventory_management.report_agro_sale_receipt_template</field>
+        <field name="report_file">inventory_management.report_agro_sale_receipt_template</field>
+        <field name="print_report_name">'Receipt - %s' % object.name</field>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="base.paperformat_euro"/>
+    </record>
+
+</odoo>
