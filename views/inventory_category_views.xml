@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- List view: shows all product categories -->
+    <record id="view_inventory_category_list" model="ir.ui.view">
+        <field name="name">inventory.category.list</field>
+        <field name="model">inventory.category</field>
+        <field name="arch" type="xml">
+            <list string="Categories">
+                <field name="name"/>
+                <field name="description"/>
+                <field name="product_count" string="Products"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form view: create/edit a single category -->
+    <record id="view_inventory_category_form" model="ir.ui.view">
+        <field name="name">inventory.category.form</field>
+        <field name="model">inventory.category</field>
+        <field name="arch" type="xml">
+            <form string="Category">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="description"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action: opens the categories list — referenced by Configuration > Categories menu -->
+    <record id="action_inventory_category" model="ir.actions.act_window">
+        <field name="name">Categories</field>
+        <field name="res_model">inventory.category</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

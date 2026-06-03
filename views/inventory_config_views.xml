@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Form view: single-record settings screen for the shop -->
+    <!-- Fields here populate the receipt header and control expiry warning behaviour -->
+    <record id="view_inventory_config_form" model="ir.ui.view">
+        <field name="name">inventory.config.form</field>
+        <field name="model">inventory.config</field>
+        <field name="arch" type="xml">
+            <form string="Shop Settings">
+                <sheet>
+                    <group string="Shop Info">
+                        <field name="shop_name"/>
+                        <field name="shop_phone"/>
+                        <field name="gst_number" placeholder="Leave blank if not registered"/>
+                        <field name="shop_logo" widget="image" class="oe_avatar"/>
+                    </group>
+                    <group string="Address">
+                        <field name="shop_address" nolabel="1"/>
+                    </group>
+                    <group string="Receipt">
+                        <!-- Footer text printed at the bottom of every receipt -->
+                        <field name="receipt_footer"/>
+                    </group>
+                    <group string="Stock Alerts">
+                        <!-- Batches expiring within this many days turn orange -->
+                        <field name="expiry_warning_days"/>
+                        <!-- Default customer pre-filled on every new sale -->
+                        <field name="default_walkin_partner_id"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action: opens config inline (no popup) — referenced by Configuration > Shop Settings menu -->
+    <record id="action_inventory_config" model="ir.actions.act_window">
+        <field name="name">Shop Settings</field>
+        <field name="res_model">inventory.config</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+    </record>
+
+</odoo>
