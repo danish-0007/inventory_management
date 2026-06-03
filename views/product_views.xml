@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- List view: all products with stock status color-coding (red=out, orange=low) -->
+    <record id="view_agro_product_list" model="ir.ui.view">
+        <field name="name">product.template.agro.list</field>
+        <field name="model">product.template</field>
+        <field name="arch" type="xml">
+            <list string="Products" decoration-danger="stock_status == 'out'" decoration-warning="stock_status == 'low'">
+                <field name="image_128" widget="image" string=" " optional="show"/>
+                <field name="name"/>
+                <field name="agro_category_id" string="Category"/>
+                <field name="agro_unit_id" string="Unit"/>
+                <field name="qty_available" string="On Hand"/>
+                <field name="min_stock" string="Min Stock" optional="show"/>
+                <!-- Badge widget shows ok/low/out as green/orange/red pill -->
+                <field name="stock_status" widget="badge"
+                    decoration-success="stock_status == 'ok'"
+                    decoration-warning="stock_status == 'low'"
+                    decoration-danger="stock_status == 'out'"/>
+                <field name="list_price" string="Sale Price"/>
+                <field name="is_sellable" optional="show"/>
+                <field name="is_purchasable" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form view: simplified product screen — hides Odoo's accounting/variant tabs -->
+    <record id="view_agro_product_form" model="ir.ui.view">
+        <field name="name">product.template.agro.form</field>
+        <field name="model">product.template</field>
+        <field name="arch" type="xml">
+            <form string="Product">
+                <sheet>
+                    <!-- Smart buttons: show batch count and link to batch/sale/purchase history -->
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_lot_ids" type="object"
+                            class="oe_stat_button" icon="fa-cubes"
+                            attrs="{'invisible': [('id', '=', False)]}">
+                            <field name="nbr_reordering_rules" widget="statinfo" string="Batches"/>
+                        </button>
+                    </div>
+                    <field name="image_1920" widget="image" class="oe_avatar"/>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Product Name"/></h1>
+                    </div>
+                    <group>
+                        <group string="Classification">
+                            <field name="agro_category_id"/>
+                            <field name="agro_unit_id"/>
+                            <field name="barcode"/>
+                        </group>
+                        <group string="Pricing &amp; Supply">
+                            <field name="list_price" string="Sale Price"/>
+                            <field name="default_supplier_id"/>
+                        </group>
+                        <group string="Stock">
+                            <field name="qty_available" string="On Hand" readonly="1"/>
+                            <field name="min_stock"/>
+                            <field name="stock_status" widget="badge"
+                                decoration-success="stock_status == 'ok'"
+                                decoration-warning="stock_status == 'low'"
+                                decoration-danger="stock_status == 'out'"/>
+                            <!-- tracking='lot' required for batch-level stock tracking -->
+                            <field name="tracking"/>
+                        </group>
+                        <group string="Availability">
+                            <field name="is_sellable"/>
+                            <field name="is_purchasable"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <group string="Description">
+                        <field name="description_sale" nolabel="1" placeholder="Notes visible on receipts..."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Kanban view: card-per-product with stock badge — useful for quick visual scan -->
+    <record id="view_agro_product_kanban" model="ir.ui.view">
+        <field name="name">product.template.agro.kanban</field>
+        <field name="model">product.template</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="image_128"/>
+                <field name="qty_available"/>
+                <field name="stock_status"/>
+                <field name="list_price"/>
+                <field name="agro_category_id"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_image">
+                                <img t-att-src="kanban_image('product.template', 'image_128', record.id.raw_value)"
+                                     alt="Product"/>
+                            </div>
+                            <div class="oe_kanban_details">
+                                <strong><field name="name"/></strong>
+                                <div><field name="agro_category_id"/></div>
+                                <div>On Hand: <field name="qty_available"/></div>
+                                <div>Price: <field name="list_price"/></div>
+                                <!-- Stock status badge: green/orange/red -->
+                                <div>
+                                    <span t-attf-class="badge #{record.stock_status.raw_value == 'ok' ? 'text-bg-success' : record.stock_status.raw_value == 'low' ? 'text-bg-warning' : 'text-bg-danger'}">
+                                        <field name="stock_status"/>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Action: opens Products with agro views — default context sets lot tracking on new products -->
+    <record id="action_agro_products" model="ir.actions.act_window">
+        <field name="name">Products</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'kanban', 'view_id': ref('view_agro_product_kanban')}),
+            (0, 0, {'view_mode': 'list',   'view_id': ref('view_agro_product_list')}),
+            (0, 0, {'view_mode': 'form',   'view_id': ref('view_agro_product_form')}),
+        ]"/>
+        <field name="context">{'default_is_sellable': True, 'default_tracking': 'lot'}</field>
+    </record>
+
+</odoo>
