@@ -12,7 +12,7 @@
                 create="false" edit="false">
                 <field name="name" string="Product"/>
                 <field name="agro_category_id" string="Category"/>
-                <field name="agro_unit_id" string="Unit"/>
+                <field name="uom_id" string="Unit"/>
                 <field name="qty_available" string="On Hand"/>
                 <field name="min_stock" string="Min Stock"/>
                 <field name="stock_status" widget="badge"
@@ -23,7 +23,7 @@
         </field>
     </record>
 
-    <!-- Action: full stock overview grouped by category — referenced by Products > Stock Overview -->
+    <!-- Action: full stock overview grouped by category -->
     <record id="action_agro_stock_overview" model="ir.actions.act_window">
         <field name="name">Stock Overview</field>
         <field name="res_model">product.template</field>

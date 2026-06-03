@@ -1,43 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
-    <!-- List view: shows all units with product count -->
-    <record id="view_inventory_unit_list" model="ir.ui.view">
-        <field name="name">inventory.unit.list</field>
-        <field name="model">inventory.unit</field>
-        <field name="arch" type="xml">
-            <list string="Units">
-                <field name="name"/>
-                <field name="symbol"/>
-                <field name="category"/>
-                <field name="product_count" string="Products"/>
-            </list>
-        </field>
-    </record>
-
-    <!-- Form view: create/edit a single unit -->
-    <record id="view_inventory_unit_form" model="ir.ui.view">
-        <field name="name">inventory.unit.form</field>
-        <field name="model">inventory.unit</field>
-        <field name="arch" type="xml">
-            <form string="Unit">
-                <sheet>
-                    <group>
-                        <field name="name"/>
-                        <field name="symbol"/>
-                        <field name="category"/>
-                        <field name="active"/>
-                    </group>
-                </sheet>
-            </form>
-        </field>
-    </record>
-
-    <!-- Action: opens the units list — referenced by Configuration > Units menu -->
-    <record id="action_inventory_unit" model="ir.actions.act_window">
-        <field name="name">Units</field>
-        <field name="res_model">inventory.unit</field>
-        <field name="view_mode">list,form</field>
-    </record>
-
+    <!-- inventory.unit removed — use native uom.uom (Configuration > Units of Measure in Odoo) -->
 </odoo>

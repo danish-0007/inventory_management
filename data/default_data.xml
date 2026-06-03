@@ -2,49 +2,28 @@
 <odoo>
     <data noupdate="1">
 
-        <!-- Default Units -->
-        <record id="unit_kg" model="inventory.unit">
-            <field name="name">Kilogram</field>
-            <field name="symbol">kg</field>
-            <field name="category">weight</field>
-        </record>
-        <record id="unit_gram" model="inventory.unit">
-            <field name="name">Gram</field>
-            <field name="symbol">g</field>
-            <field name="category">weight</field>
-        </record>
-        <record id="unit_litre" model="inventory.unit">
-            <field name="name">Litre</field>
-            <field name="symbol">L</field>
-            <field name="category">volume</field>
-        </record>
-        <record id="unit_ml" model="inventory.unit">
-            <field name="name">Millilitre</field>
-            <field name="symbol">ml</field>
-            <field name="category">volume</field>
-        </record>
-        <record id="unit_qty" model="inventory.unit">
-            <field name="name">Quantity</field>
-            <field name="symbol">qty</field>
-            <field name="category">count</field>
-        </record>
-        <record id="unit_pack" model="inventory.unit">
+        <!-- Custom UOM records — extends Odoo's native Units category with agro-specific units -->
+        <!-- kg, g, litre, ml already exist in standard Odoo — not duplicated here -->
+        <record id="uom_pack" model="uom.uom">
             <field name="name">Pack</field>
-            <field name="symbol">pack</field>
-            <field name="category">count</field>
+            <field name="category_id" ref="uom.product_uom_categ_unit"/>
+            <field name="uom_type">bigger</field>
+            <field name="factor">1.0</field>
         </record>
-        <record id="unit_bag" model="inventory.unit">
+        <record id="uom_bag" model="uom.uom">
             <field name="name">Bag</field>
-            <field name="symbol">bag</field>
-            <field name="category">count</field>
+            <field name="category_id" ref="uom.product_uom_categ_unit"/>
+            <field name="uom_type">bigger</field>
+            <field name="factor">1.0</field>
         </record>
-        <record id="unit_bundle" model="inventory.unit">
+        <record id="uom_bundle" model="uom.uom">
             <field name="name">Bundle</field>
-            <field name="symbol">bundle</field>
-            <field name="category">count</field>
+            <field name="category_id" ref="uom.product_uom_categ_unit"/>
+            <field name="uom_type">bigger</field>
+            <field name="factor">1.0</field>
         </record>
 
-        <!-- Default Categories -->
+        <!-- Default product categories -->
         <record id="category_seeds" model="inventory.category">
             <field name="name">Seeds</field>
         </record>
@@ -61,13 +40,13 @@
             <field name="name">Tools</field>
         </record>
 
-        <!-- Walk-in Customer -->
+        <!-- Walk-in Customer — auto-filled on every new sale -->
         <record id="partner_walkin_customer" model="res.partner">
             <field name="name">Walk-in Customer</field>
             <field name="customer_rank">1</field>
         </record>
 
-        <!-- Default Shop Config (singleton) -->
+        <!-- Default shop config singleton -->
         <record id="agro_shop_config" model="inventory.config">
             <field name="shop_name">Agro &amp; Seeds Shop</field>
             <field name="expiry_warning_days">30</field>

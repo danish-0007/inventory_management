@@ -9,14 +9,13 @@ class ProductTemplateExt(models.Model):
     is_sellable = fields.Boolean(string='Sellable', default=True)        # show in sale wizard
     is_purchasable = fields.Boolean(string='Purchasable', default=True)  # show in purchase wizard
     agro_category_id = fields.Many2one('inventory.category', string='Category')
-    agro_unit_id = fields.Many2one('inventory.unit', string='Display Unit')
+    # uom_id (native) used directly — no custom unit field needed
     min_stock = fields.Float(string='Min Stock', default=0.0)            # reorder threshold
     stock_status = fields.Selection([
         ('ok', 'OK'),
         ('low', 'Low'),
         ('out', 'Out of Stock'),
     ], compute='_compute_stock_status', store=True, string='Stock Status')
-    sale_price = fields.Float(string='Sale Price', related='list_price', readonly=False)
     default_supplier_id = fields.Many2one('res.partner', string='Default Supplier')
 
     @api.depends('qty_available', 'min_stock')

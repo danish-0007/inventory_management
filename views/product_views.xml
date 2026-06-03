@@ -10,10 +10,9 @@
                 <field name="image_128" widget="image" string=" " optional="show"/>
                 <field name="name"/>
                 <field name="agro_category_id" string="Category"/>
-                <field name="agro_unit_id" string="Unit"/>
+                <field name="uom_id" string="Unit"/>
                 <field name="qty_available" string="On Hand"/>
                 <field name="min_stock" string="Min Stock" optional="show"/>
-                <!-- Badge widget shows ok/low/out as green/orange/red pill -->
                 <field name="stock_status" widget="badge"
                     decoration-success="stock_status == 'ok'"
                     decoration-warning="stock_status == 'low'"
@@ -32,7 +31,6 @@
         <field name="arch" type="xml">
             <form string="Product">
                 <sheet>
-                    <!-- Smart buttons: show batch count and link to batch/sale/purchase history -->
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_lot_ids" type="object"
                             class="oe_stat_button" icon="fa-cubes"
@@ -47,7 +45,9 @@
                     <group>
                         <group string="Classification">
                             <field name="agro_category_id"/>
-                            <field name="agro_unit_id"/>
+                            <!-- uom_id: native Odoo field — integrates with website, POS, accounting -->
+                            <field name="uom_id" string="Unit of Measure"/>
+                            <field name="uom_po_id" string="Purchase Unit"/>
                             <field name="barcode"/>
                         </group>
                         <group string="Pricing &amp; Supply">
@@ -78,7 +78,7 @@
         </field>
     </record>
 
-    <!-- Kanban view: card-per-product with stock badge — useful for quick visual scan -->
+    <!-- Kanban view: card-per-product with stock badge -->
     <record id="view_agro_product_kanban" model="ir.ui.view">
         <field name="name">product.template.agro.kanban</field>
         <field name="model">product.template</field>
@@ -103,7 +103,6 @@
                                 <div><field name="agro_category_id"/></div>
                                 <div>On Hand: <field name="qty_available"/></div>
                                 <div>Price: <field name="list_price"/></div>
-                                <!-- Stock status badge: green/orange/red -->
                                 <div>
                                     <span t-attf-class="badge #{record.stock_status.raw_value == 'ok' ? 'text-bg-success' : record.stock_status.raw_value == 'low' ? 'text-bg-warning' : 'text-bg-danger'}">
                                         <field name="stock_status"/>

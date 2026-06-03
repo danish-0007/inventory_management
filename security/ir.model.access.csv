@@ -1,5 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_inventory_unit,inventory.unit,model_inventory_unit,base.group_user,1,1,1,1
 access_inventory_category,inventory.category,model_inventory_category,base.group_user,1,1,1,1
 access_inventory_config,inventory.config,model_inventory_config,base.group_user,1,1,1,1
 access_agro_sale_wizard,agro.sale.wizard,model_agro_sale_wizard,base.group_user,1,1,1,1

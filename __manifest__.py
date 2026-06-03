@@ -6,12 +6,11 @@
     'author': 'Custom',
     'category': 'Inventory',
     'version': '16.0.1.0.0',
-    'depends': ['product', 'stock', 'sale', 'purchase', 'mail'],
+    'depends': ['uom', 'product', 'stock', 'sale', 'purchase', 'mail'],
     'data': [
         'security/ir.model.access.csv',
         'data/sequence_data.xml',
         'data/default_data.xml',
-        'views/inventory_unit_views.xml',
         'views/inventory_category_views.xml',
         'views/inventory_config_views.xml',
         'views/product_views.xml',

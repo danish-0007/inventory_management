@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from . import inventory_unit
 from . import inventory_category
 from . import inventory_config
 from . import product_template_ext
