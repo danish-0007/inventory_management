@@ -1,0 +1,12 @@
+/.architect-context.md
+/.claude
+/.vscode
+/controllers
+/data
+/demo
+/models
+/pyrightconfig.json
+/reports
+/security
+/views
+/__manifest__.py
