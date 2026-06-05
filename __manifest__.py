@@ -6,7 +6,7 @@
     'author': 'Custom',
     'category': 'Inventory',
     'version': '16.0.1.0.0',
-    'depends': ['uom', 'product', 'stock', 'sale', 'purchase', 'mail'],
+    'depends': ['uom', 'product', 'stock', 'sale', 'purchase', 'mail', 'product_expiry'],
     'data': [
         'security/ir.model.access.csv',
         'data/sequence_data.xml',
