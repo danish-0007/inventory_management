@@ -9,12 +9,13 @@ class StockLotExt(models.Model):
     purchase_date = fields.Date(string='Purchase Date')
     unit_price = fields.Float(string='Cost Price')
     auto_batch_sequence = fields.Boolean(string='Auto Generated', default=False)
-    days_to_expiry = fields.Integer(compute='_compute_expiry_info', string='Days to Expiry', store=True)
+    # Not stored — recomputed live so changes to expiry_warning_days in config take effect immediately
+    days_to_expiry = fields.Integer(compute='_compute_expiry_info', string='Days to Expiry')
     expiry_status = fields.Selection([
         ('ok', 'OK'),
         ('expiring', 'Expiring Soon'),
         ('expired', 'Expired'),
-    ], compute='_compute_expiry_info', store=True, string='Expiry Status')
+    ], compute='_compute_expiry_info', string='Expiry Status')
 
     @api.depends('expiration_date')
     def _compute_expiry_info(self):

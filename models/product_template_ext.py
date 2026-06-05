@@ -18,6 +18,30 @@ class ProductTemplateExt(models.Model):
     ], compute='_compute_stock_status', store=True, string='Stock Status')
     default_supplier_id = fields.Many2one('res.partner', string='Default Supplier')
 
+    # No @api.depends — always live-computed so count stays fresh after goods receipts
+    lot_count = fields.Integer(compute='_compute_lot_count', string='Batches')
+
+    @api.depends()
+    def _compute_lot_count(self):
+        all_variant_ids = self.mapped('product_variant_ids').ids
+        if all_variant_ids:
+            lot_data = self.env['stock.lot'].read_group(
+                [('product_id', 'in', all_variant_ids), ('product_qty', '>', 0)],
+                ['product_id'],
+                ['product_id'],
+            )
+            count_map = {d['product_id'][0]: d['product_id_count'] for d in lot_data}
+        else:
+            count_map = {}
+        for tmpl in self:
+            tmpl.lot_count = sum(count_map.get(vid, 0) for vid in tmpl.product_variant_ids.ids)
+
+    def action_view_lot_ids(self):
+        self.ensure_one()
+        action = self.env['ir.actions.act_window']._for_xml_id('inventory_management.action_agro_batches')
+        action['domain'] = [('product_id', 'in', self.product_variant_ids.ids)]
+        return action
+
     @api.depends('qty_available', 'min_stock')
     def _compute_stock_status(self):
         # ok = above min, low = at or below min, out = zero stock
