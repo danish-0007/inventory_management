@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
     <!-- Wizard form: the New Sale popup — opens as a dialog (target: new) -->
@@ -19,7 +19,8 @@
                 </group>
                 <!-- Inline editable table — operator adds items here -->
                 <field name="line_ids" nolabel="1">
-                    <list editable="bottom">
+                    <tree editable="bottom">
+                        <field name="product_product_id" column_invisible="1"/>
                         <field name="product_id" options="{'no_create': True}"/>
                         <field name="lot_id" options="{'no_create': True}"/>  <!-- auto-filled FIFO -->
                         <field name="available_qty" readonly="1" optional="show"/>
@@ -27,7 +28,7 @@
                         <field name="unit_price"/>
                         <field name="discount_pct" optional="show"/>
                         <field name="subtotal" readonly="1"/>
-                    </list>
+                    </tree>
                 </field>
                 <!-- Grand total shown at bottom-right -->
                 <group class="oe_subtotal_footer">
