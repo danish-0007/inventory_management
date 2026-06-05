@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
     <!-- List view: read-only sales history — create/edit disabled, data comes from wizard -->
@@ -6,7 +6,7 @@
         <field name="name">sale.order.agro.list</field>
         <field name="model">sale.order</field>
         <field name="arch" type="xml">
-            <list string="Sales History" create="false" edit="false">
+            <tree string="Sales History" create="false" edit="false">
                 <field name="name" string="Receipt No"/>
                 <field name="date_order" string="Date"/>
                 <field name="partner_id" string="Customer"/>
@@ -16,7 +16,7 @@
                 <field name="state" widget="badge"
                     decoration-success="state == 'sale'"
                     decoration-info="state == 'draft'"/>
-            </list>
+            </tree>
         </field>
     </record>
 
@@ -46,14 +46,14 @@
                     </group>
                     <!-- Line items: product, batch sold, qty, price, discount, subtotal -->
                     <field name="order_line" readonly="1">
-                        <list>
+                        <tree>
                             <field name="product_id" string="Product"/>
                             <field name="agro_lot_id" string="Batch"/>
                             <field name="product_uom_qty" string="Qty"/>
                             <field name="price_unit" string="Price"/>
                             <field name="discount" string="Disc %"/>
                             <field name="price_subtotal" string="Subtotal"/>
-                        </list>
+                        </tree>
                     </field>
                     <group>
                         <field name="note" string="Notes" readonly="1"/>
@@ -67,9 +67,9 @@
     <record id="action_agro_sale_history" model="ir.actions.act_window">
         <field name="name">Sales History</field>
         <field name="res_model">sale.order</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">tree,form</field>
         <field name="view_ids" eval="[(5, 0, 0),
-            (0, 0, {'view_mode': 'list', 'view_id': ref('view_agro_sale_history_list')}),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_agro_sale_history_list')}),
             (0, 0, {'view_mode': 'form', 'view_id': ref('view_agro_sale_history_form')}),
         ]"/>
         <!-- agro_is_shop_sale=True excludes any standard Odoo orders from this view -->

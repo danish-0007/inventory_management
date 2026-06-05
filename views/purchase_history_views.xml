@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
     <!-- List view: read-only purchase history — create/edit disabled, data comes from wizard -->
@@ -6,7 +6,7 @@
         <field name="name">purchase.order.agro.list</field>
         <field name="model">purchase.order</field>
         <field name="arch" type="xml">
-            <list string="Purchase History" create="false" edit="false">
+            <tree string="Purchase History" create="false" edit="false">
                 <field name="name" string="PO No"/>
                 <field name="date_order" string="Date Received"/>
                 <field name="partner_id" string="Supplier"/>
@@ -14,7 +14,7 @@
                 <field name="state" widget="badge"
                     decoration-success="state == 'purchase'"
                     decoration-info="state == 'draft'"/>
-            </list>
+            </tree>
         </field>
     </record>
 
@@ -38,12 +38,12 @@
                     </group>
                     <!-- Line items: what was received, at what cost -->
                     <field name="order_line" readonly="1">
-                        <list>
+                        <tree>
                             <field name="product_id" string="Product"/>
                             <field name="product_qty" string="Qty"/>
                             <field name="price_unit" string="Cost Price"/>
                             <field name="price_subtotal" string="Subtotal"/>
-                        </list>
+                        </tree>
                     </field>
                     <group>
                         <field name="notes" readonly="1"/>
@@ -57,9 +57,9 @@
     <record id="action_agro_purchase_history" model="ir.actions.act_window">
         <field name="name">Purchase History</field>
         <field name="res_model">purchase.order</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">tree,form</field>
         <field name="view_ids" eval="[(5, 0, 0),
-            (0, 0, {'view_mode': 'list', 'view_id': ref('view_agro_purchase_history_list')}),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_agro_purchase_history_list')}),
             (0, 0, {'view_mode': 'form', 'view_id': ref('view_agro_purchase_history_form')}),
         ]"/>
     </record>
