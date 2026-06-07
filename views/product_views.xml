@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
     <!-- List view: all products with stock status color-coding (red=out, orange=low) -->
@@ -126,7 +126,7 @@
             (0, 0, {'view_mode': 'tree',   'view_id': ref('view_agro_product_list')}),
             (0, 0, {'view_mode': 'form',   'view_id': ref('view_agro_product_form')}),
         ]"/>
-        <field name="context">{'default_is_sellable': True, 'default_tracking': 'lot'}</field>
+        <field name="context">{'default_is_sellable': True, 'default_tracking': 'lot', 'default_detailed_type': 'product'}</field>
     </record>
 
 </odoo>

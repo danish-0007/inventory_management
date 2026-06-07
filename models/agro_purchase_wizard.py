@@ -49,27 +49,30 @@ class AgroPurchaseWizard(models.TransientModel):
                 )[:1]
                 if not wizard_line:
                     continue
-                # Create a new batch for this received stock
-                lot = self.env['stock.lot'].create({
-                    'name': wizard_line.batch_name,
-                    'product_id': wizard_line.product_product_id.id,
-                    'company_id': po.company_id.id,
-                    'expiration_date': wizard_line.expiry_date or False,
-                    'purchase_date': self.date,
-                    'unit_price': wizard_line.unit_price,
-                })
-                # Replace Odoo's auto move line with our lot-specific one
-                move.move_line_ids.unlink()
-                self.env['stock.move.line'].create({
-                    'move_id': move.id,
-                    'picking_id': picking.id,
-                    'product_id': move.product_id.id,
-                    'product_uom_id': move.product_uom.id,
-                    'lot_id': lot.id,
-                    'qty_done': wizard_line.quantity,
-                    'location_id': move.location_id.id,
-                    'location_dest_id': move.location_dest_id.id,
-                })
+                if move.product_id.tracking == 'lot':
+                    # Create a new batch for this received stock
+                    lot = self.env['stock.lot'].create({
+                        'name': wizard_line.batch_name,
+                        'product_id': wizard_line.product_product_id.id,
+                        'company_id': po.company_id.id,
+                        'expiration_date': wizard_line.expiry_date or False,
+                        'purchase_date': self.date,
+                        'unit_price': wizard_line.unit_price,
+                    })
+                    # Replace Odoo's auto move line with our lot-specific one
+                    move.move_line_ids.unlink()
+                    self.env['stock.move.line'].create({
+                        'move_id': move.id,
+                        'picking_id': picking.id,
+                        'product_id': move.product_id.id,
+                        'product_uom_id': move.product_uom.id,
+                        'lot_id': lot.id,
+                        'qty_done': wizard_line.quantity,
+                        'location_id': move.location_id.id,
+                        'location_dest_id': move.location_dest_id.id,
+                    })
+                else:
+                    move.quantity_done = wizard_line.quantity
             # skip_backorder prevents Odoo's backorder popup
             picking.with_context(skip_backorder=True, skip_sms=True).button_validate()
 
@@ -81,6 +84,7 @@ class AgroPurchaseWizard(models.TransientModel):
                 'message': f'Purchase {po.name} done. Stock updated.',
                 'type': 'success',
                 'sticky': False,
+                'next': {'type': 'ir.actions.act_window_close'},
             }
         }
 

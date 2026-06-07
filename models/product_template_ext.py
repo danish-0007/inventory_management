@@ -6,6 +6,7 @@ class ProductTemplateExt(models.Model):
     # Adds agro fields to Odoo's built-in product — keeps future integrations (website, GST) intact
     _inherit = 'product.template'
 
+    detailed_type = fields.Selection(default='product')
     is_sellable = fields.Boolean(string='Sellable', default=True)        # show in sale wizard
     is_purchasable = fields.Boolean(string='Purchasable', default=True)  # show in purchase wizard
     agro_category_id = fields.Many2one('inventory.category', string='Category')
