@@ -78,9 +78,16 @@
                                         <td><t t-esc="line_index + 1"/></td>
                                         <td><t t-esc="line.product_id.name"/></td>
                                         <td><t t-esc="line.agro_lot_id.name or ''"/></td>
-                                        <td class="text-right"><t t-esc="line.product_uom_qty"/></td>
                                         <td class="text-right">
-                                            <t t-esc="line.price_unit" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                            <t t-if="line.agro_sold_uom_id">
+                                                <t t-esc="'%g' % line.agro_sold_qty"/> <t t-esc="line.agro_sold_uom_id.name"/>
+                                            </t>
+                                            <t t-else="">
+                                                <t t-esc="'%g' % line.product_uom_qty"/> <t t-esc="line.product_uom.name"/>
+                                            </t>
+                                        </td>
+                                        <td class="text-right">
+                                            <t t-esc="line.price_unit" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/> / <t t-esc="line.product_uom.name"/>
                                         </td>
                                         <td class="text-right">
                                             <!-- Only show discount cell if a discount was applied -->

@@ -21,10 +21,13 @@
                 <field name="line_ids" nolabel="1">
                     <tree editable="bottom">
                         <field name="product_product_id" column_invisible="1"/>
+                        <field name="product_uom_category_id" column_invisible="1"/>
                         <field name="product_id" options="{'no_create': True}"/>
                         <field name="lot_id" options="{'no_create': True}"/>  <!-- auto-filled FIFO -->
                         <field name="available_qty" readonly="1" optional="show"/>
                         <field name="quantity"/>
+                        <field name="uom_id" domain="[('name', 'in', ['Units', 'kg', 'g', 'L', 'ml'])]" options="{'no_create': True}"/>
+                        <field name="product_uom_id" readonly="1" optional="show" string="Base Unit"/>
                         <field name="unit_price"/>
                         <field name="discount_pct" optional="show"/>
                         <field name="subtotal" readonly="1"/>
