@@ -11,6 +11,7 @@
         'security/ir.model.access.csv',
         'data/sequence_data.xml',
         'data/default_data.xml',
+        'data/uom_data.xml',
         'views/inventory_category_views.xml',
         'views/inventory_config_views.xml',
         'views/product_views.xml',

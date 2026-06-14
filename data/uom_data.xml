@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- ml: Volume unit smaller than L (1 L = 1000 ml) -->
+        <record id="product_uom_ml" model="uom.uom">
+            <field name="name">ml</field>
+            <field name="category_id" ref="uom.product_uom_categ_vol"/>
+            <field name="uom_type">smaller</field>
+            <field name="factor">1000.0</field>
+            <field name="rounding">0.001</field>
+        </record>
+    </data>
+
+    <!-- Run setup to rename and archive UoMs on every install/upgrade -->
+    <function model="uom.uom" name="_setup_agro_uoms"/>
+</odoo>
