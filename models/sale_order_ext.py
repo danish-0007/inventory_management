@@ -21,3 +21,5 @@ class SaleOrderLineExt(models.Model):
     _inherit = 'sale.order.line'
 
     agro_lot_id = fields.Many2one('stock.lot', string='Batch')
+    agro_sold_qty = fields.Float(string='Sold Qty')
+    agro_sold_uom_id = fields.Many2one('uom.uom', string='Sold Unit')
