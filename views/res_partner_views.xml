@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Adds village/crops/credit period and a notes snippet directly on the contact form -->
+    <record id="view_partner_form_agro" model="ir.ui.view">
+        <field name="name">res.partner.form.agro</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="before">
+                <group string="Credit &amp; Crops">
+                    <field name="village_id"/>
+                    <field name="credit_period"/>
+                    <field name="crop_ids" widget="many2many_tags"/>
+                </group>
+                <group string="Notes &amp; Field History">
+                    <field name="note_ids" nolabel="1" limit="3">
+                        <tree create="false" delete="false" edit="false">
+                            <field name="note_date"/>
+                            <field name="description"/>
+                        </tree>
+                    </field>
+                    <button name="action_view_notes" type="object" string="View All Notes" class="btn-link" icon="fa-list"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

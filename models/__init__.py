@@ -4,6 +4,7 @@ from . import inventory_config
 from . import agro_village
 from . import agro_crop
 from . import agro_customer_note
+from . import res_partner_ext
 from . import product_template_ext
 from . import stock_lot_ext
 from . import sale_order_ext

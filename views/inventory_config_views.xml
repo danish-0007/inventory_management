@@ -28,6 +28,10 @@
                         <!-- Default customer pre-filled on every new sale -->
                         <field name="default_walkin_partner_id"/>
                     </group>
+                    <group string="Credit">
+                        <!-- Used as a new customer's credit period unless changed on their profile -->
+                        <field name="default_credit_period"/>
+                    </group>
                 </sheet>
             </form>
         </field>

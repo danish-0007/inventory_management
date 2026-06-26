@@ -15,6 +15,7 @@ class InventoryConfig(models.Model):
     gst_number = fields.Char(string='GST Number')
     receipt_footer = fields.Text(string='Receipt Footer Message')
     expiry_warning_days = fields.Integer(string='Expiry Warning (days)', default=30)
+    default_credit_period = fields.Integer(string='Default Credit Period (days)', default=30)
     # Auto-filled as customer on every new sale — no need to pick a customer for cash sales
     default_walkin_partner_id = fields.Many2one(
         'res.partner', string='Walk-in Customer',
