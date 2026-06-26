@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- One consolidated, sortable list instead of separate "Top Customers"/"Village Report" screens —
+         click any column header to re-rank, Group By Village for a per-village rollup (sums auto-total). -->
+    <record id="view_agro_top_customers_search" model="ir.ui.view">
+        <field name="name">res.partner.top.customers.search</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <search string="Top Customers">
+                <field name="name"/>
+                <field name="village_id"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_by_village" string="Village" context="{'group_by': 'village_id'}"/>
+                    <filter name="group_by_risk" string="Risk" context="{'group_by': 'risk_classification'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_agro_top_customers_list" model="ir.ui.view">
+        <field name="name">res.partner.top.customers.list</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <tree string="Top Customers" create="false">
+                <field name="name"/>
+                <field name="village_id"/>
+                <field name="credit_period"/>
+                <field name="risk_classification" widget="badge"
+                    decoration-success="risk_classification == 'green'"
+                    decoration-warning="risk_classification == 'yellow'"
+                    decoration-danger="risk_classification == 'red'"/>
+                <field name="agro_total_purchased" sum="Total Purchased"/>
+                <field name="agro_total_outstanding" sum="Total Outstanding"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_agro_top_customers" model="ir.actions.act_window">
+        <field name="name">Top Customers</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_agro_top_customers_list')}),
+        ]"/>
+        <field name="search_view_id" ref="view_agro_top_customers_search"/>
+        <field name="domain">[('sale_order_ids.agro_is_shop_sale', '=', True)]</field>
+    </record>
+
+</odoo>

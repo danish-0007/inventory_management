@@ -30,6 +30,7 @@
         'views/sale_history_views.xml',
         'views/purchase_history_views.xml',
         'views/sale_order_overdue_views.xml',
+        'views/res_partner_top_customers_views.xml',
         'views/stock_overview_views.xml',
         'views/menus.xml',
     ],

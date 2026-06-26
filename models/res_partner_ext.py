@@ -25,6 +25,10 @@ class ResPartnerExt(models.Model):
         ('yellow', 'Yellow'),
         ('red', 'Red'),
     ], string='Risk', compute='_compute_risk_classification', store=True)
+    agro_total_purchased = fields.Monetary(
+        string='Total Purchased', compute='_compute_agro_total_purchased',
+        currency_field='currency_id', store=True
+    )
 
     @api.depends('payment_ids')
     def _compute_agro_payment_count(self):
@@ -42,6 +46,13 @@ class ResPartnerExt(models.Model):
                 partner.risk_classification = 'yellow'
             else:
                 partner.risk_classification = 'green'
+
+    @api.depends('sale_order_ids.amount_total', 'sale_order_ids.agro_is_shop_sale')
+    def _compute_agro_total_purchased(self):
+        for partner in self:
+            partner.agro_total_purchased = sum(
+                partner.sale_order_ids.filtered('agro_is_shop_sale').mapped('amount_total')
+            )
 
     @api.depends('sale_order_ids.agro_amount_outstanding', 'sale_order_ids.agro_is_shop_sale')
     def _compute_agro_total_outstanding(self):
