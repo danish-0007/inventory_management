@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 
 
@@ -23,7 +23,7 @@ class AgroPurchaseWizard(models.TransientModel):
         # Creates purchase.order → confirms → creates stock.lot per line → validates receipt → shows notification
         self.ensure_one()
         if not self.line_ids:
-            raise UserError('Add at least one item.')
+            raise UserError(_('Add at least one item.'))
 
         order_lines = [(0, 0, {
             'product_id': line.product_product_id.id,
@@ -42,11 +42,10 @@ class AgroPurchaseWizard(models.TransientModel):
         })
         po.button_confirm()
 
+        lines_by_product = {line.product_product_id.id: line for line in self.line_ids}
         for picking in po.picking_ids:
             for move in picking.move_ids:
-                wizard_line = self.line_ids.filtered(
-                    lambda l: l.product_product_id.id == move.product_id.id
-                )[:1]
+                wizard_line = lines_by_product.get(move.product_id.id)
                 if not wizard_line:
                     continue
                 if move.product_id.tracking == 'lot':
@@ -127,3 +126,11 @@ class AgroPurchaseWizardLine(models.TransientModel):
     def _compute_subtotal(self):
         for line in self:
             line.subtotal = line.quantity * line.unit_price
+
+    @api.constrains('quantity', 'unit_price')
+    def _check_line_values(self):
+        for line in self:
+            if line.quantity <= 0:
+                raise UserError(_('Quantity must be greater than zero.'))
+            if line.unit_price < 0:
+                raise UserError(_('Cost price cannot be negative.'))

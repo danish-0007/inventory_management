@@ -6,8 +6,10 @@
     'author': 'Custom',
     'category': 'Inventory',
     'version': '16.0.1.0.0',
+    'license': 'LGPL-3',
     'depends': ['uom', 'product', 'stock', 'sale', 'purchase', 'mail', 'product_expiry'],
     'data': [
+        'security/agro_security.xml',
         'security/ir.model.access.csv',
         'data/sequence_data.xml',
         'data/default_data.xml',

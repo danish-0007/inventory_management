@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields, api
+from datetime import datetime
+from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 
 
@@ -38,19 +39,21 @@ class AgroSaleWizard(models.TransientModel):
         # Creates sale.order → confirms it → assigns lots to delivery → validates → prints receipt
         self.ensure_one()
         if not self.line_ids:
-            raise UserError('Add at least one item.')
+            raise UserError(_('Add at least one item.'))
 
         # Early stock availability check — prevents partial confirmation on overcommit
         for line in self.line_ids:
             if line.lot_id and line.uom_id and line.product_id:
                 qty_in_base = line.uom_id._compute_quantity(line.quantity, line.product_id.uom_id)
                 if qty_in_base > line.lot_id.product_qty:
-                    raise UserError(
-                        f"Not enough stock for {line.product_id.name} in batch {line.lot_id.name}. "
-                        f"Requested: {line.quantity:g} {line.uom_id.name} "
-                        f"({qty_in_base:.3f} {line.product_id.uom_id.name}), "
-                        f"Available: {line.lot_id.product_qty:.3f} {line.product_id.uom_id.name}."
-                    )
+                    raise UserError(_(
+                        "Not enough stock for %(product)s in batch %(batch)s. "
+                        "Requested: %(qty)g %(uom)s (%(qty_base).3f %(base_uom)s), "
+                        "Available: %(available).3f %(base_uom)s.",
+                        product=line.product_id.name, batch=line.lot_id.name,
+                        qty=line.quantity, uom=line.uom_id.name, qty_base=qty_in_base,
+                        base_uom=line.product_id.uom_id.name, available=line.lot_id.product_qty,
+                    ))
 
         order_lines = [(0, 0, {
             'product_id': line.product_product_id.id,
@@ -63,9 +66,11 @@ class AgroSaleWizard(models.TransientModel):
             'agro_sold_uom_id': line.uom_id.id,
         }) for line in self.line_ids]
 
+        # Keep the chosen date but with the current time, so same-day order ordering stays sane
+        order_date = datetime.combine(self.date, datetime.now().time()) if self.date else fields.Datetime.now()
         sale_order = self.env['sale.order'].create({
             'partner_id': self.customer_id.id,
-            'date_order': fields.Datetime.now(),
+            'date_order': order_date,
             'agro_payment_method': self.payment_method,
             'agro_is_shop_sale': True,
             'note': self.notes or '',
@@ -73,11 +78,10 @@ class AgroSaleWizard(models.TransientModel):
         })
         sale_order.action_confirm()
 
+        lines_by_product = {line.product_product_id.id: line for line in self.line_ids}
         for picking in sale_order.picking_ids:
             for move in picking.move_ids:
-                wizard_line = self.line_ids.filtered(
-                    lambda l: l.product_product_id.id == move.product_id.id
-                )[:1]
+                wizard_line = lines_by_product.get(move.product_id.id)
                 if wizard_line and wizard_line.lot_id and move.product_id.tracking == 'lot':
                     # Replace Odoo's auto move lines with our specific lot assignment
                     qty_done = wizard_line.uom_id._compute_quantity(wizard_line.quantity, move.product_uom)
@@ -168,9 +172,20 @@ class AgroSaleWizardLine(models.TransientModel):
         for line in self:
             if line.product_id and line.uom_id:
                 if line.uom_id.category_id != line.product_id.uom_id.category_id:
-                    raise UserError(
-                        f"Unit '{line.uom_id.name}' is not compatible with base unit '{line.product_id.uom_id.name}'."
-                    )
+                    raise UserError(_(
+                        "Unit '%(uom)s' is not compatible with base unit '%(base_uom)s'.",
+                        uom=line.uom_id.name, base_uom=line.product_id.uom_id.name,
+                    ))
+
+    @api.constrains('quantity', 'unit_price', 'discount_pct')
+    def _check_line_values(self):
+        for line in self:
+            if line.quantity <= 0:
+                raise UserError(_('Quantity must be greater than zero.'))
+            if line.unit_price < 0:
+                raise UserError(_('Price cannot be negative.'))
+            if not (0 <= line.discount_pct <= 100):
+                raise UserError(_('Discount must be between 0 and 100.'))
 
     @api.depends('quantity', 'uom_id', 'unit_price', 'discount_pct', 'product_id')
     def _compute_subtotal(self):

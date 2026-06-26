@@ -1,6 +1,7 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_inventory_category,inventory.category,model_inventory_category,base.group_user,1,1,1,1
-access_inventory_config,inventory.config,model_inventory_config,base.group_user,1,1,1,1
+access_inventory_config_cashier,inventory.config.cashier,model_inventory_config,group_agro_cashier,1,0,0,0
+access_inventory_config_manager,inventory.config.manager,model_inventory_config,group_agro_manager,1,1,1,1
 access_agro_sale_wizard,agro.sale.wizard,model_agro_sale_wizard,base.group_user,1,1,1,1
 access_agro_sale_wizard_line,agro.sale.wizard.line,model_agro_sale_wizard_line,base.group_user,1,1,1,1
 access_agro_purchase_wizard,agro.purchase.wizard,model_agro_purchase_wizard,base.group_user,1,1,1,1
