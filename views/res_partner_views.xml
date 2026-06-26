@@ -7,11 +7,19 @@
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button class="oe_stat_button" type="object" name="action_view_payments" icon="fa-money">
+                    <field string="Payments" name="agro_payment_count" widget="statinfo"/>
+                </button>
+            </div>
             <xpath expr="//notebook" position="before">
                 <group string="Credit &amp; Crops">
+                    <field name="currency_id" invisible="1"/>
                     <field name="village_id"/>
                     <field name="credit_period"/>
                     <field name="crop_ids" widget="many2many_tags"/>
+                    <field name="agro_total_outstanding"/>
+                    <button name="action_receive_payment" type="object" string="Receive Payment" class="btn-link" icon="fa-money"/>
                 </group>
                 <group string="Notes &amp; Field History">
                     <field name="note_ids" nolabel="1" limit="3">

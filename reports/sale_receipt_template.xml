@@ -45,6 +45,15 @@
                                 <p><strong>Payment:</strong>
                                     <t t-esc="dict(o._fields['agro_payment_method'].selection).get(o.agro_payment_method, '')"/>
                                 </p>
+                                <!-- Credit sales must show the customer when payment is due -->
+                                <t t-if="o.agro_payment_method == 'credit'">
+                                    <p style="color:#b00;">
+                                        <strong>Amount Due:</strong>
+                                        <t t-esc="o.agro_amount_outstanding" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                        <strong>&amp;nbsp;&amp;nbsp;by</strong>
+                                        <t t-esc="o.agro_due_date" t-options="{'widget': 'date'}"/>
+                                    </p>
+                                </t>
                             </div>
                         </div>
 

@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields
+from datetime import timedelta
+from odoo import models, fields, api
 
 
 class SaleOrderExt(models.Model):
-    # Adds payment method and shop-sale flag to Odoo's standard sale order
+    # Adds payment method, shop-sale flag, and a lightweight credit ledger to Odoo's standard sale order
     _inherit = 'sale.order'
 
     agro_payment_method = fields.Selection([
@@ -14,6 +15,59 @@ class SaleOrderExt(models.Model):
     ], string='Payment Method', default='cash')
     # Used to filter Sales History so only shop sales show (not other Odoo orders)
     agro_is_shop_sale = fields.Boolean(string='Shop Sale', default=False)
+
+    agro_amount_paid = fields.Monetary(string='Amount Paid', currency_field='currency_id')
+    agro_amount_outstanding = fields.Monetary(
+        string='Amount Outstanding', compute='_compute_agro_amount_outstanding',
+        store=True, currency_field='currency_id'
+    )
+    agro_due_date = fields.Date(string='Due Date', compute='_compute_agro_due_date', store=True)
+    agro_is_overdue = fields.Boolean(string='Overdue', compute='_compute_agro_overdue', store=True)
+    agro_days_overdue = fields.Integer(string='Days Overdue', compute='_compute_agro_overdue', store=True)
+    agro_products_summary = fields.Char(
+        string='Products', compute='_compute_agro_products_summary', store=True
+    )
+
+    @api.depends('amount_total', 'agro_amount_paid')
+    def _compute_agro_amount_outstanding(self):
+        for order in self:
+            order.agro_amount_outstanding = order.amount_total - order.agro_amount_paid
+
+    @api.depends('date_order', 'partner_id.credit_period')
+    def _compute_agro_due_date(self):
+        for order in self:
+            order_date = order.date_order.date() if order.date_order else fields.Date.context_today(order)
+            order.agro_due_date = order_date + timedelta(days=order.partner_id.credit_period or 0)
+
+    @api.depends('agro_due_date', 'agro_amount_outstanding')
+    def _compute_agro_overdue(self):
+        today = fields.Date.context_today(self)
+        for order in self:
+            if order.agro_due_date and order.agro_amount_outstanding > 0.005 and order.agro_due_date < today:
+                order.agro_is_overdue = True
+                order.agro_days_overdue = (today - order.agro_due_date).days
+            else:
+                order.agro_is_overdue = False
+                order.agro_days_overdue = 0
+
+    @api.depends('order_line.product_id')
+    def _compute_agro_products_summary(self):
+        for order in self:
+            order.agro_products_summary = ', '.join(order.order_line.mapped('product_id.name'))
+
+    def action_confirm(self):
+        # Odoo's own action_confirm() always resets date_order to now() (_prepare_confirmation_values) —
+        # restore the operator's chosen date for shop sales right after, so backdated entries stick.
+        # Cash/UPI/other are settled at the counter immediately — only "Credit" carries a balance.
+        chosen_dates = {order.id: order.date_order for order in self if order.agro_is_shop_sale}
+        res = super().action_confirm()
+        for order in self:
+            if order.agro_is_shop_sale:
+                if chosen_dates.get(order.id):
+                    order.date_order = chosen_dates[order.id]
+                if order.agro_payment_method != 'credit':
+                    order.agro_amount_paid = order.amount_total
+        return res
 
 
 class SaleOrderLineExt(models.Model):

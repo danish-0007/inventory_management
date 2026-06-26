@@ -18,6 +18,7 @@
         'views/agro_village_views.xml',
         'views/agro_crop_views.xml',
         'views/agro_customer_note_views.xml',
+        'views/agro_customer_payment_views.xml',
         'views/res_partner_views.xml',
         'views/product_views.xml',
         'views/stock_lot_views.xml',

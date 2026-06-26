@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Receive Payment popup, opened from the customer form; also the row-form for payment history -->
+    <record id="view_agro_customer_payment_form" model="ir.ui.view">
+        <field name="name">agro.customer.payment.form</field>
+        <field name="model">agro.customer.payment</field>
+        <field name="arch" type="xml">
+            <form string="Receive Payment">
+                <sheet>
+                    <field name="currency_id" invisible="1"/>
+                    <group>
+                        <field name="partner_id"/>
+                        <field name="payment_date"/>
+                        <field name="amount"/>
+                        <field name="payment_method"/>
+                        <field name="note"/>
+                        <field name="user_id" readonly="1"/>
+                    </group>
+                    <field name="allocation_ids" attrs="{'invisible': [('allocation_ids', '=', [])]}">
+                        <tree create="false" delete="false" edit="false">
+                            <field name="sale_order_id"/>
+                            <field name="amount_allocated"/>
+                        </tree>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_agro_customer_payment_list" model="ir.ui.view">
+        <field name="name">agro.customer.payment.list</field>
+        <field name="model">agro.customer.payment</field>
+        <field name="arch" type="xml">
+            <tree string="Payments">
+                <field name="payment_date"/>
+                <field name="partner_id"/>
+                <field name="amount"/>
+                <field name="payment_method"/>
+                <field name="note"/>
+            </tree>
+        </field>
+    </record>
+
+</odoo>
