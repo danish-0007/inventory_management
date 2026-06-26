@@ -7,3 +7,4 @@ access_agro_purchase_wizard,agro.purchase.wizard,model_agro_purchase_wizard,base
 access_agro_purchase_wizard_line,agro.purchase.wizard.line,model_agro_purchase_wizard_line,base.group_user,1,1,1,1
 access_agro_village,agro.village,model_agro_village,base.group_user,1,1,1,1
 access_agro_crop,agro.crop,model_agro_crop,base.group_user,1,1,1,1
+access_agro_customer_note,agro.customer.note,model_agro_customer_note,base.group_user,1,1,1,1

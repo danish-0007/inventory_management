@@ -17,6 +17,7 @@
         'views/inventory_config_views.xml',
         'views/agro_village_views.xml',
         'views/agro_crop_views.xml',
+        'views/agro_customer_note_views.xml',
         'views/product_views.xml',
         'views/stock_lot_views.xml',
         'reports/sale_receipt_report.xml',
