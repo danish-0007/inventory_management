@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="agro_crop_paddy" model="agro.crop"><field name="name">Paddy</field></record>
+    <record id="agro_crop_cotton" model="agro.crop"><field name="name">Cotton</field></record>
+    <record id="agro_crop_tomato" model="agro.crop"><field name="name">Tomato</field></record>
+    <record id="agro_crop_chilli" model="agro.crop"><field name="name">Chilli</field></record>
+    <record id="agro_crop_onion" model="agro.crop"><field name="name">Onion</field></record>
+    <record id="agro_crop_banana" model="agro.crop"><field name="name">Banana</field></record>
+    <record id="agro_crop_coconut" model="agro.crop"><field name="name">Coconut</field></record>
+    <record id="agro_crop_maize" model="agro.crop"><field name="name">Maize</field></record>
+    <record id="agro_crop_groundnut" model="agro.crop"><field name="name">Groundnut</field></record>
+    <record id="agro_crop_other" model="agro.crop"><field name="name">Other</field></record>
+</odoo>

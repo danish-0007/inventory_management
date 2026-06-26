@@ -46,7 +46,11 @@
     <menuitem id="menu_agro_config_root" name="Configuration" parent="menu_agro_root" sequence="100"/>
     <menuitem id="menu_agro_config_categories"
         name="Categories" parent="menu_agro_config_root" action="action_inventory_category" sequence="1"/>
+    <menuitem id="menu_agro_config_villages"
+        name="Villages" parent="menu_agro_config_root" action="action_agro_village" sequence="2"/>
+    <menuitem id="menu_agro_config_crops"
+        name="Crops" parent="menu_agro_config_root" action="action_agro_crop" sequence="3"/>
     <menuitem id="menu_agro_config_settings"
-        name="Shop Settings" parent="menu_agro_config_root" action="action_inventory_config" sequence="2"/>
+        name="Shop Settings" parent="menu_agro_config_root" action="action_inventory_config" sequence="4"/>
 
 </odoo>
