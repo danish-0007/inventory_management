@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Worst-offenders-first list of unpaid bills past their due date -->
+    <record id="view_agro_overdue_bills_list" model="ir.ui.view">
+        <field name="name">sale.order.overdue.list</field>
+        <field name="model">sale.order</field>
+        <field name="arch" type="xml">
+            <tree string="Overdue Bills" create="false" decoration-danger="agro_days_overdue &gt; 60">
+                <field name="partner_id"/>
+                <field name="agro_products_summary"/>
+                <field name="date_order"/>
+                <field name="agro_due_date"/>
+                <field name="agro_days_overdue"/>
+                <field name="agro_amount_outstanding"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_agro_overdue_bills" model="ir.actions.act_window">
+        <field name="name">Overdue Bills</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_agro_overdue_bills_list')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('inventory_management.view_agro_sale_history_form')}),
+        ]"/>
+        <field name="domain">[('agro_is_shop_sale', '=', True), ('agro_is_overdue', '=', True)]</field>
+    </record>
+
+</odoo>

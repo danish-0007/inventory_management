@@ -69,6 +69,17 @@ class SaleOrderExt(models.Model):
                     order.agro_amount_paid = order.amount_total
         return res
 
+    @api.model
+    def _cron_update_overdue_status(self):
+        # agro_is_overdue/agro_days_overdue depend on "today", which doesn't fire @api.depends on
+        # its own — this nightly job force-recomputes them so yesterday's not-yet-due bill that
+        # crossed its due date overnight gets flagged (and partner risk_classification cascades).
+        open_orders = self.search([
+            ('agro_is_shop_sale', '=', True),
+            ('agro_amount_outstanding', '>', 0.005),
+        ])
+        open_orders._compute_agro_overdue()
+
 
 class SaleOrderLineExt(models.Model):
     # Stores the batch sold per line — for receipt printing and history traceability

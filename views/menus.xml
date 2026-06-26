@@ -42,6 +42,10 @@
     <menuitem id="menu_agro_purchase_history"
         name="Purchases" parent="menu_agro_history_root" action="action_agro_purchase_history" sequence="2"/>
 
+    <!-- Who owes money and is late -->
+    <menuitem id="menu_agro_overdue_bills"
+        name="Overdue Bills" parent="menu_agro_root" action="action_agro_overdue_bills" sequence="45"/>
+
     <!-- Configuration — Units removed; use Odoo's native Units of Measure app instead -->
     <menuitem id="menu_agro_config_root" name="Configuration" parent="menu_agro_root" sequence="100"/>
     <menuitem id="menu_agro_config_categories"

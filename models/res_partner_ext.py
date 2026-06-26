@@ -20,11 +20,28 @@ class ResPartnerExt(models.Model):
         string='Total Outstanding', compute='_compute_agro_total_outstanding',
         currency_field='currency_id'
     )
+    risk_classification = fields.Selection([
+        ('green', 'Green'),
+        ('yellow', 'Yellow'),
+        ('red', 'Red'),
+    ], string='Risk', compute='_compute_risk_classification', store=True)
 
     @api.depends('payment_ids')
     def _compute_agro_payment_count(self):
         for partner in self:
             partner.agro_payment_count = len(partner.payment_ids)
+
+    @api.depends('sale_order_ids.agro_is_overdue', 'sale_order_ids.agro_days_overdue', 'sale_order_ids.agro_is_shop_sale')
+    def _compute_risk_classification(self):
+        # red = a bill over 60 days late, or 2+ bills currently late; yellow = 1 bill late; else green
+        for partner in self:
+            overdue = partner.sale_order_ids.filtered(lambda o: o.agro_is_shop_sale and o.agro_is_overdue)
+            if any(o.agro_days_overdue > 60 for o in overdue) or len(overdue) >= 2:
+                partner.risk_classification = 'red'
+            elif overdue:
+                partner.risk_classification = 'yellow'
+            else:
+                partner.risk_classification = 'green'
 
     @api.depends('sale_order_ids.agro_amount_outstanding', 'sale_order_ids.agro_is_shop_sale')
     def _compute_agro_total_outstanding(self):

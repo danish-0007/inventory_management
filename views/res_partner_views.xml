@@ -20,6 +20,10 @@
                     <field name="crop_ids" widget="many2many_tags"/>
                     <field name="agro_total_outstanding"/>
                     <button name="action_receive_payment" type="object" string="Receive Payment" class="btn-link" icon="fa-money"/>
+                    <field name="risk_classification" widget="badge"
+                        decoration-success="risk_classification == 'green'"
+                        decoration-warning="risk_classification == 'yellow'"
+                        decoration-danger="risk_classification == 'red'"/>
                 </group>
                 <group string="Notes &amp; Field History">
                     <field name="note_ids" nolabel="1" limit="3">
