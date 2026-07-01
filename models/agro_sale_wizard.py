@@ -19,21 +19,31 @@ class AgroSaleWizard(models.TransientModel):
     ], string='Payment Method', default='cash', required=True)
     notes = fields.Text(string='Notes')
     line_ids = fields.One2many('agro.sale.wizard.line', 'wizard_id', string='Items')
-    total_amount = fields.Float(compute='_compute_total', string='Total Amount')
+    subtotal_before_tax = fields.Float(compute='_compute_totals', string='Subtotal')
+    tax_amount = fields.Float(compute='_compute_totals', string='Tax Amount')
+    total_amount = fields.Float(compute='_compute_totals', string='Total Amount')
 
     @api.model
     def default_get(self, fields_list):
-        # Pre-fills Walk-in Customer from shop config so operator doesn't have to pick one
         res = super().default_get(fields_list)
         config = self.env['inventory.config'].search([], limit=1)
         if config and config.default_walkin_partner_id:
             res['customer_id'] = config.default_walkin_partner_id.id
         return res
 
-    @api.depends('line_ids.subtotal')
-    def _compute_total(self):
+    @api.depends('line_ids.subtotal', 'line_ids.product_id.agro_tax_rate_id')
+    def _compute_totals(self):
         for w in self:
-            w.total_amount = sum(w.line_ids.mapped('subtotal'))
+            total = 0.0
+            pre_tax_total = 0.0
+            for line in w.line_ids:
+                line_total = line.subtotal
+                total += line_total
+                rate = (line.product_id.agro_tax_rate_id.rate / 100.0) if (line.product_id and line.product_id.agro_tax_rate_id) else 0.0
+                pre_tax_total += (line_total / (1.0 + rate)) if rate else line_total
+            w.total_amount = total
+            w.subtotal_before_tax = pre_tax_total
+            w.tax_amount = total - pre_tax_total
 
     def action_confirm(self):
         # Creates sale.order → confirms it → assigns lots to delivery → validates → prints receipt
@@ -55,12 +65,19 @@ class AgroSaleWizard(models.TransientModel):
                         base_uom=line.product_id.uom_id.name, available=line.lot_id.product_qty,
                     ))
 
+        def _tax_cmd(line):
+            tax = line.product_id.agro_tax_rate_id.account_tax_incl_id if (
+                line.product_id and line.product_id.agro_tax_rate_id
+            ) else False
+            return [(6, 0, [tax.id])] if tax else [(5,)]
+
         order_lines = [(0, 0, {
             'product_id': line.product_product_id.id,
             'product_uom': line.product_id.uom_id.id,
             'product_uom_qty': line.uom_id._compute_quantity(line.quantity, line.product_id.uom_id),
             'price_unit': line.unit_price,
             'discount': line.discount_pct,
+            'tax_id': _tax_cmd(line),
             'agro_lot_id': line.lot_id.id if line.lot_id else False,
             'agro_sold_qty': line.quantity,
             'agro_sold_uom_id': line.uom_id.id,
@@ -103,7 +120,9 @@ class AgroSaleWizard(models.TransientModel):
             # skip_backorder prevents Odoo's backorder popup from interrupting the flow
             picking.with_context(skip_backorder=True, skip_sms=True).button_validate()
 
-        return self.env.ref('inventory_management.report_agro_sale_receipt').report_action(sale_order)
+        report = self.env.ref('inventory_management.report_agro_sale_receipt').report_action(sale_order)
+        report['close_on_report_download'] = True
+        return report
 
 
 class AgroSaleWizardLine(models.TransientModel):

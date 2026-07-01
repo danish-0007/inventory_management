@@ -11,3 +11,4 @@ access_agro_crop,agro.crop,model_agro_crop,base.group_user,1,1,1,1
 access_agro_customer_note,agro.customer.note,model_agro_customer_note,base.group_user,1,1,1,1
 access_agro_customer_payment,agro.customer.payment,model_agro_customer_payment,base.group_user,1,1,1,1
 access_agro_customer_payment_allocation,agro.customer.payment.allocation,model_agro_customer_payment_allocation,base.group_user,1,1,1,1
+access_agro_tax_rate,agro.tax.rate,model_agro_tax_rate,base.group_user,1,1,1,1

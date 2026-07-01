@@ -21,7 +21,6 @@ class InventoryConfig(models.Model):
         'res.partner', string='Walk-in Customer',
         help='Default customer used for walk-in sales'
     )
-
     @api.model
     def get_config(self):
         # Always use this instead of search() — creates a default if none exists

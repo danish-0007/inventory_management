@@ -18,6 +18,7 @@
         'data/agro_cron_data.xml',
         'views/inventory_category_views.xml',
         'views/inventory_config_views.xml',
+        'views/agro_tax_rate_views.xml',
         'views/agro_village_views.xml',
         'views/agro_crop_views.xml',
         'views/agro_customer_note_views.xml',

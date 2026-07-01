@@ -9,7 +9,12 @@
             <form string="Receive Stock">
                 <group>
                     <group>
-                        <field name="supplier_id"/>
+                        <field name="supplier_id"
+                            domain="['|', ('agro_partner_type', 'in', ['supplier', 'both']), '&amp;', ('agro_partner_type', '=', False), ('supplier_rank', '&gt;', 0)]"
+                            options="{'no_quick_create': true}"
+                            context="{'form_view_ref': 'inventory_management.view_agro_partner_simple_form',
+                                      'default_supplier_rank': 1,
+                                      'default_agro_partner_type': 'supplier'}"/>
                         <field name="date"/>
                     </group>
                 </group>
@@ -17,9 +22,10 @@
                 <field name="line_ids" nolabel="1">
                     <tree editable="bottom">
                         <field name="product_id" options="{'no_create': True}"/>
-                        <field name="batch_name"/>  <!-- auto-generated, can be overridden -->
+                        <field name="batch_name"/>
                         <field name="quantity"/>
                         <field name="unit_price" string="Cost Price"/>
+                        <field name="tax_rate_id" string="Tax Rate" options="{'no_create': false}"/>
                         <field name="expiry_date"/>
                         <field name="subtotal" readonly="1"/>
                     </tree>

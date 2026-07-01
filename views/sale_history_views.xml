@@ -12,6 +12,8 @@
                 <field name="partner_id" string="Customer"/>
                 <field name="user_id" string="Salesperson"/>
                 <field name="agro_payment_method" string="Payment"/>
+                <field name="amount_untaxed" string="Subtotal" optional="show"/>
+                <field name="amount_tax" string="Tax Amt" optional="show"/>
                 <field name="amount_total" string="Total"/>
                 <field name="state" widget="badge"
                     decoration-success="state == 'sale'"
@@ -41,6 +43,8 @@
                         <group>
                             <field name="user_id" string="Salesperson" readonly="1"/>
                             <field name="agro_payment_method" readonly="1"/>
+                            <field name="amount_untaxed" string="Subtotal" readonly="1"/>
+                            <field name="amount_tax" string="Tax Amount" readonly="1"/>
                             <field name="amount_total" string="Total" readonly="1"/>
                         </group>
                     </group>

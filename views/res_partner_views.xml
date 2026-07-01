@@ -1,6 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- Simplified standalone contact form — only fields the shop owner actually uses -->
+    <record id="view_agro_partner_simple_form" model="ir.ui.view">
+        <field name="name">res.partner.agro.simple.form</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <form string="Contact">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Name"/></h1>
+                    </div>
+                    <group>
+                        <field name="agro_partner_type" widget="radio"
+                            options="{'horizontal': true}" required="1"/>
+                    </group>
+                    <group>
+                        <group string="Contact">
+                            <field name="phone" widget="phone"/>
+                            <field name="mobile" widget="phone"/>
+                            <field name="email" widget="email"/>
+                        </group>
+                        <group string="Location">
+                            <field name="village_id"/>
+                        </group>
+                    </group>
+                    <group attrs="{'invisible': [('agro_partner_type', 'not in', ['customer', 'both'])]}">
+                        <group>
+                            <field name="credit_period"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="agro_total_outstanding" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="risk_classification" widget="badge"
+                                decoration-success="risk_classification == 'green'"
+                                decoration-warning="risk_classification == 'yellow'"
+                                decoration-danger="risk_classification == 'red'"/>
+                        </group>
+                    </group>
+                    <div attrs="{'invisible': ['|', ('agro_partner_type', 'not in', ['customer', 'both']), ('agro_total_outstanding', '&lt;=', 0)]}">
+                        <button name="action_receive_payment" type="object"
+                            string="Receive Payment" class="btn-primary" icon="fa-money"/>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Customer list: name, phone, village, outstanding, risk -->
+    <record id="view_agro_customer_list" model="ir.ui.view">
+        <field name="name">res.partner.agro.customer.list</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <tree string="Customers">
+                <field name="name"/>
+                <field name="phone"/>
+                <field name="village_id"/>
+                <field name="credit_period"/>
+                <field name="agro_total_outstanding"/>
+                <field name="risk_classification" widget="badge"
+                    decoration-success="risk_classification == 'green'"
+                    decoration-warning="risk_classification == 'yellow'"
+                    decoration-danger="risk_classification == 'red'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Supplier list: name, phone, village -->
+    <record id="view_agro_supplier_list" model="ir.ui.view">
+        <field name="name">res.partner.agro.supplier.list</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <tree string="Suppliers">
+                <field name="name"/>
+                <field name="phone"/>
+                <field name="village_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_agro_customers" model="ir.actions.act_window">
+        <field name="name">Customers</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_agro_customer_list')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_agro_partner_simple_form')}),
+        ]"/>
+        <field name="domain">['|', ('agro_partner_type', 'in', ['customer', 'both']), '&amp;', ('agro_partner_type', '=', False), ('customer_rank', '&gt;', 0)]</field>
+        <field name="context">{'default_customer_rank': 1, 'default_agro_partner_type': 'customer'}</field>
+    </record>
+
+    <record id="action_agro_suppliers" model="ir.actions.act_window">
+        <field name="name">Suppliers</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_agro_supplier_list')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_agro_partner_simple_form')}),
+        ]"/>
+        <field name="domain">['|', ('agro_partner_type', 'in', ['supplier', 'both']), '&amp;', ('agro_partner_type', '=', False), ('supplier_rank', '&gt;', 0)]</field>
+        <field name="context">{'default_supplier_rank': 1, 'default_agro_partner_type': 'supplier'}</field>
+    </record>
+
     <!-- Adds village/crops/credit period and a notes snippet directly on the contact form -->
     <record id="view_partner_form_agro" model="ir.ui.view">
         <field name="name">res.partner.form.agro</field>

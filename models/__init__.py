@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from . import inventory_category
 from . import inventory_config
+from . import agro_tax_rate
 from . import agro_village
 from . import agro_crop
 from . import agro_customer_note

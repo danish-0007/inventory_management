@@ -18,6 +18,7 @@ class ProductTemplateExt(models.Model):
         ('out', 'Out of Stock'),
     ], compute='_compute_stock_status', store=True, string='Stock Status')
     default_supplier_id = fields.Many2one('res.partner', string='Default Supplier')
+    agro_tax_rate_id = fields.Many2one('agro.tax.rate', string='Tax Rate')
 
     # No @api.depends — always live-computed so count stays fresh after goods receipts
     lot_count = fields.Integer(compute='_compute_lot_count', string='Batches')

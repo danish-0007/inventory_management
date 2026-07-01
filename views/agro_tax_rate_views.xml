@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_agro_tax_rate_list" model="ir.ui.view">
+        <field name="name">agro.tax.rate.list</field>
+        <field name="model">agro.tax.rate</field>
+        <field name="arch" type="xml">
+            <tree string="Tax Rates" editable="bottom">
+                <field name="name"/>
+                <field name="rate" string="Rate (%)"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_agro_tax_rate_form" model="ir.ui.view">
+        <field name="name">agro.tax.rate.form</field>
+        <field name="model">agro.tax.rate</field>
+        <field name="arch" type="xml">
+            <form string="Tax Rate">
+                <sheet>
+                    <group>
+                        <field name="name" placeholder="e.g. GST 5%"/>
+                        <field name="rate" string="Rate (%)" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_agro_tax_rate" model="ir.actions.act_window">
+        <field name="name">Tax Rates</field>
+        <field name="res_model">agro.tax.rate</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

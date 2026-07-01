@@ -48,6 +48,9 @@ class AgroPurchaseWizard(models.TransientModel):
                 wizard_line = lines_by_product.get(move.product_id.id)
                 if not wizard_line:
                     continue
+                # Save the tax rate on the product so the sale wizard can auto-apply it
+                if wizard_line.tax_rate_id:
+                    wizard_line.product_id.agro_tax_rate_id = wizard_line.tax_rate_id
                 if move.product_id.tracking == 'lot':
                     # Create a new batch for this received stock
                     lot = self.env['stock.lot'].create({
@@ -106,6 +109,7 @@ class AgroPurchaseWizardLine(models.TransientModel):
     unit_price = fields.Float(string='Cost Price')
     expiry_date = fields.Date(string='Expiry Date')
     batch_name = fields.Char(string='Batch No')  # auto-generated, operator can override
+    tax_rate_id = fields.Many2one('agro.tax.rate', string='Tax Rate')
     subtotal = fields.Float(compute='_compute_subtotal', string='Subtotal')
 
     @api.depends('product_id')
@@ -121,6 +125,7 @@ class AgroPurchaseWizardLine(models.TransientModel):
         self.batch_name = self.env['ir.sequence'].next_by_code('agro.batch')
         if self.product_id.default_supplier_id and not self.wizard_id.supplier_id:
             self.wizard_id.supplier_id = self.product_id.default_supplier_id
+        self.tax_rate_id = self.product_id.agro_tax_rate_id
 
     @api.depends('quantity', 'unit_price')
     def _compute_subtotal(self):

@@ -6,6 +6,12 @@ class ResPartnerExt(models.Model):
     # Agro fields: village, crops grown, per-customer credit period, field notes, payment ledger
     _inherit = 'res.partner'
 
+    agro_partner_type = fields.Selection([
+        ('customer', 'Customer'),
+        ('supplier', 'Supplier'),
+        ('both', 'Customer & Supplier'),
+    ], string='Type')
+
     village_id = fields.Many2one('agro.village', string='Village')
     crop_ids = fields.Many2many('agro.crop', string='Crops Grown')
     credit_period = fields.Integer(
@@ -60,6 +66,27 @@ class ResPartnerExt(models.Model):
             partner.agro_total_outstanding = sum(
                 partner.sale_order_ids.filtered('agro_is_shop_sale').mapped('agro_amount_outstanding')
             )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            ptype = vals.get('agro_partner_type')  # only act if explicitly set via context
+            if ptype in ('customer', 'both') and not vals.get('customer_rank'):
+                vals['customer_rank'] = 1
+            if ptype in ('supplier', 'both') and not vals.get('supplier_rank'):
+                vals['supplier_rank'] = 1
+        return super().create(vals_list)
+
+    def write(self, vals):
+        if 'agro_partner_type' in vals:
+            ptype = vals['agro_partner_type']
+            if ptype in ('customer', 'both'):
+                for p in self.filtered(lambda r: r.customer_rank < 1):
+                    super(ResPartnerExt, p).write({'customer_rank': 1})
+            if ptype in ('supplier', 'both'):
+                for p in self.filtered(lambda r: r.supplier_rank < 1):
+                    super(ResPartnerExt, p).write({'supplier_rank': 1})
+        return super().write(vals)
 
     def action_view_notes(self):
         self.ensure_one()

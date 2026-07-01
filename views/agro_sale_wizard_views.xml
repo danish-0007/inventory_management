@@ -9,7 +9,12 @@
             <form string="New Sale">
                 <group>
                     <group>
-                        <field name="customer_id"/>  <!-- defaults to Walk-in Customer -->
+                        <field name="customer_id"
+                            domain="['|', ('agro_partner_type', 'in', ['customer', 'both']), '&amp;', ('agro_partner_type', '=', False), ('customer_rank', '&gt;', 0)]"
+                            options="{'no_quick_create': true}"
+                            context="{'form_view_ref': 'inventory_management.view_agro_partner_simple_form',
+                                      'default_customer_rank': 1,
+                                      'default_agro_partner_type': 'customer'}"/>
                         <field name="date"/>
                     </group>
                     <group>
@@ -33,8 +38,12 @@
                         <field name="subtotal" readonly="1"/>
                     </tree>
                 </field>
-                <!-- Grand total shown at bottom-right -->
+                <!-- Totals: subtotal + tax breakdown + grand total -->
                 <group class="oe_subtotal_footer">
+                    <field name="subtotal_before_tax" readonly="1" string="Subtotal"
+                        attrs="{'invisible': [('tax_amount', '=', 0)]}"/>
+                    <field name="tax_amount" readonly="1" string="Tax"
+                        attrs="{'invisible': [('tax_amount', '=', 0)]}"/>
                     <field name="total_amount" readonly="1" class="oe_subtotal_footer_separator"/>
                 </group>
                 <group>

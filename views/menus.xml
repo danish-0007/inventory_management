@@ -7,17 +7,24 @@
         sequence="10"
         web_icon="inventory_management,static/description/icon.png"/>
 
+    <!-- Default landing when app opens — safe list, not a popup -->
+    <menuitem id="menu_agro_customers"
+        name="Customers"
+        parent="menu_agro_root"
+        action="action_agro_customers"
+        sequence="5"/>
+
     <!-- Quick-action shortcuts for daily use -->
     <menuitem id="menu_agro_new_sale"
         name="New Sale"
         parent="menu_agro_root"
         action="action_agro_new_sale"
-        sequence="5"/>
+        sequence="10"/>
     <menuitem id="menu_agro_new_purchase"
         name="Receive Stock"
         parent="menu_agro_root"
         action="action_agro_new_purchase"
-        sequence="10"/>
+        sequence="15"/>
 
     <!-- Products section -->
     <menuitem id="menu_agro_products_root" name="Products" parent="menu_agro_root" sequence="20"/>
@@ -42,6 +49,12 @@
     <menuitem id="menu_agro_purchase_history"
         name="Purchases" parent="menu_agro_history_root" action="action_agro_purchase_history" sequence="2"/>
 
+    <menuitem id="menu_agro_suppliers"
+        name="Suppliers"
+        parent="menu_agro_root"
+        action="action_agro_suppliers"
+        sequence="42"/>
+
     <!-- Who owes money and is late -->
     <menuitem id="menu_agro_overdue_bills"
         name="Overdue Bills" parent="menu_agro_root" action="action_agro_overdue_bills" sequence="45"/>
@@ -56,7 +69,9 @@
         name="Villages" parent="menu_agro_config_root" action="action_agro_village" sequence="2"/>
     <menuitem id="menu_agro_config_crops"
         name="Crops" parent="menu_agro_config_root" action="action_agro_crop" sequence="3"/>
+    <menuitem id="menu_agro_config_tax_rates"
+        name="Tax Rates" parent="menu_agro_config_root" action="action_agro_tax_rate" sequence="3"/>
     <menuitem id="menu_agro_config_settings"
-        name="Shop Settings" parent="menu_agro_config_root" action="action_inventory_config" sequence="4"/>
+        name="Shop Settings" parent="menu_agro_config_root" action="action_inventory_config" sequence="5"/>
 
 </odoo>

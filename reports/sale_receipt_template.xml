@@ -110,10 +110,24 @@
                             </tbody>
                         </table>
 
-                        <!-- Grand total -->
+                        <!-- Totals: show subtotal + tax breakdown when tax was applied -->
                         <div class="row">
                             <div class="col-6 offset-6">
                                 <table class="table table-sm">
+                                    <t t-if="o.amount_tax">
+                                        <tr>
+                                            <td>Subtotal</td>
+                                            <td class="text-right">
+                                                <t t-esc="o.amount_untaxed" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Tax</td>
+                                            <td class="text-right">
+                                                <t t-esc="o.amount_tax" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                            </td>
+                                        </tr>
+                                    </t>
                                     <tr>
                                         <td><strong>Total</strong></td>
                                         <td class="text-right">

@@ -27,7 +27,6 @@ class SaleOrderExt(models.Model):
     agro_products_summary = fields.Char(
         string='Products', compute='_compute_agro_products_summary', store=True
     )
-
     @api.depends('amount_total', 'agro_amount_paid')
     def _compute_agro_amount_outstanding(self):
         for order in self:
