@@ -1,0 +1,528 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="inventory_management.AgroDashboard" owl="1">
+    <div class="agro-dashboard">
+
+        <!-- Chart.js CDN -->
+        <t t-if="false"><!-- loaded via manifest assets --></t>
+
+        <!-- ── Loading Overlay ── -->
+        <div t-if="state.loading" class="agro-loading">
+            <div class="agro-spinner"/>
+            <p>Loading Dashboard…</p>
+        </div>
+
+        <t t-else="">
+
+        <!-- ── Header ── -->
+        <div class="agro-header">
+            <div class="agro-header-left">
+                <span class="agro-logo">🌾</span>
+                <div>
+                    <h1>Business Dashboard</h1>
+                    <p class="agro-subtitle">Agro &amp; Seeds Shop — Real-Time Analytics</p>
+                </div>
+            </div>
+            <div class="agro-header-right">
+                <span class="agro-date" t-esc="new Date().toLocaleDateString('en-IN', {weekday:'long', year:'numeric', month:'long', day:'numeric'})"/>
+            </div>
+        </div>
+
+        <!-- ── Tab Bar ── -->
+        <div class="agro-tabs">
+            <button t-foreach="[['overview','📊 Overview'],['profit','💰 Profit'],['comparison','📈 Comparison'],['charts','📉 Charts'],['stock','📦 Stock'],['daterange','📅 Date Report']]"
+                    t-as="tab" t-key="tab[0]"
+                    t-att-class="'agro-tab' + (state.activeTab === tab[0] ? ' active' : '')"
+                    t-on-click="() => this.setTab(tab[0])">
+                <t t-esc="tab[1]"/>
+            </button>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <!-- TAB: OVERVIEW -->
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <div t-if="state.activeTab === 'overview'" class="agro-tab-content">
+
+            <!-- Quick Summary Cards (Top Row) -->
+            <div class="agro-section-title">Today's Summary</div>
+            <div class="agro-cards-grid agro-cards-6">
+                <div class="agro-card agro-card-blue">
+                    <div class="agro-card-icon">💵</div>
+                    <div class="agro-card-label">Today's Sales</div>
+                    <div class="agro-card-value" t-esc="this.fmt(state.summary.today_sales)"/>
+                    <div class="agro-card-sub">
+                        <span t-att-class="this.growthClass(state.salesKpis.today_vs_yesterday_pct)"
+                              t-esc="this.growthIcon(state.salesKpis.today_vs_yesterday_pct) + ' ' + this.fmtPct(state.salesKpis.today_vs_yesterday_pct) + ' vs yesterday'"/>
+                    </div>
+                </div>
+                <div class="agro-card agro-card-green">
+                    <div class="agro-card-icon">📈</div>
+                    <div class="agro-card-label">Today's Profit</div>
+                    <div class="agro-card-value" t-esc="this.fmt(state.summary.today_profit)"/>
+                </div>
+                <div class="agro-card agro-card-purple">
+                    <div class="agro-card-icon">👥</div>
+                    <div class="agro-card-label">Today's Customers</div>
+                    <div class="agro-card-value" t-esc="state.summary.today_customers || 0"/>
+                </div>
+                <div class="agro-card agro-card-orange">
+                    <div class="agro-card-icon">🧾</div>
+                    <div class="agro-card-label">Today's Invoices</div>
+                    <div class="agro-card-value" t-esc="state.summary.today_invoices || 0"/>
+                    <div class="agro-card-sub" t-if="state.invoiceSummary.avg_bill_value">
+                        Avg: <t t-esc="this.fmt(state.invoiceSummary.avg_bill_value)"/>
+                    </div>
+                </div>
+                <div class="agro-card agro-card-red">
+                    <div class="agro-card-icon">⚠️</div>
+                    <div class="agro-card-label">Outstanding</div>
+                    <div class="agro-card-value" t-esc="this.fmt(state.summary.outstanding)"/>
+                    <div class="agro-card-sub agro-growth-down">Overdue: <t t-esc="this.fmt(state.summary.overdue)"/></div>
+                </div>
+                <div class="agro-card agro-card-teal">
+                    <div class="agro-card-icon">📦</div>
+                    <div class="agro-card-label">Stock Value</div>
+                    <div class="agro-card-value" t-esc="this.fmt(state.summary.stock_value)"/>
+                    <div class="agro-card-sub">Est. Profit: <t t-esc="this.fmt(state.stockValuation.estimated_profit)"/></div>
+                </div>
+            </div>
+
+            <!-- Monthly KPIs -->
+            <div class="agro-section-title">This Month</div>
+            <div class="agro-cards-grid agro-cards-4">
+                <div class="agro-card agro-card-blue">
+                    <div class="agro-card-label">Month Sales</div>
+                    <div class="agro-card-value" t-esc="this.fmt(state.salesKpis.this_month)"/>
+                    <div class="agro-card-sub">
+                        <span t-att-class="this.growthClass(state.salesKpis.month_vs_last_month_pct)"
+                              t-esc="this.growthIcon(state.salesKpis.month_vs_last_month_pct) + ' ' + this.fmtPct(state.salesKpis.month_vs_last_month_pct) + ' vs last month'"/>
+                    </div>
+                </div>
+                <div class="agro-card agro-card-green">
+                    <div class="agro-card-label">Month Profit</div>
+                    <div class="agro-card-value" t-esc="this.fmt(state.summary.month_profit)"/>
+                </div>
+                <div class="agro-card agro-card-indigo">
+                    <div class="agro-card-label">Year Sales</div>
+                    <div class="agro-card-value" t-esc="this.fmt(state.salesKpis.this_year)"/>
+                    <div class="agro-card-sub">
+                        <span t-att-class="this.growthClass(state.salesKpis.year_vs_last_year_pct)"
+                              t-esc="this.growthIcon(state.salesKpis.year_vs_last_year_pct) + ' ' + this.fmtPct(state.salesKpis.year_vs_last_year_pct) + ' vs last year'"/>
+                    </div>
+                </div>
+                <div class="agro-card agro-card-purple">
+                    <div class="agro-card-label">Lifetime Sales</div>
+                    <div class="agro-card-value" t-esc="this.fmt(state.salesKpis.lifetime)"/>
+                </div>
+            </div>
+
+            <!-- Sales Trend Chart -->
+            <div class="agro-section-title">
+                Sales &amp; Profit Trend
+                <span class="agro-period-btns">
+                    <button t-foreach="[['daily','Daily'],['monthly','Monthly'],['yearly','Yearly']]"
+                            t-as="p" t-key="p[0]"
+                            t-att-class="'agro-period-btn' + (state.trendPeriod === p[0] ? ' active' : '')"
+                            t-on-click="() => this.setTrendPeriod(p[0])">
+                        <t t-esc="p[1]"/>
+                    </button>
+                </span>
+            </div>
+            <div class="agro-chart-box">
+                <canvas id="chart_trend" height="100"/>
+            </div>
+
+            <!-- Invoice + Payment Summary -->
+            <div class="agro-two-col">
+                <div class="agro-panel">
+                    <div class="agro-panel-title">Invoice Summary (Today)</div>
+                    <table class="agro-table">
+                        <tr><td>Total Invoices</td><td class="agro-val" t-esc="state.invoiceSummary.total_invoices || 0"/></tr>
+                        <tr><td>Average Bill</td><td class="agro-val" t-esc="this.fmt(state.invoiceSummary.avg_bill_value)"/></tr>
+                        <tr><td>Highest Bill</td><td class="agro-val" t-esc="this.fmt(state.invoiceSummary.highest_bill)"/></tr>
+                        <tr><td>Lowest Bill</td><td class="agro-val" t-esc="this.fmt(state.invoiceSummary.lowest_bill)"/></tr>
+                    </table>
+                </div>
+                <div class="agro-panel">
+                    <div class="agro-panel-title">Outstanding Analysis</div>
+                    <table class="agro-table">
+                        <tr><td>Total Outstanding</td><td class="agro-val agro-growth-down" t-esc="this.fmt(state.outstanding.total_outstanding)"/></tr>
+                        <tr><td>Overdue</td><td class="agro-val agro-growth-down" t-esc="this.fmt(state.outstanding.overdue)"/></tr>
+                        <tr><td>Recoverable</td><td class="agro-val" t-esc="this.fmt(state.outstanding.recoverable)"/></tr>
+                        <tr><td>Cost Yet to Recover</td><td class="agro-val agro-growth-down" t-esc="this.fmt(state.outstanding.cost_yet_to_recover)"/></tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Quick Alerts -->
+            <div class="agro-two-col">
+                <div class="agro-panel agro-panel-warning" t-if="state.summary.low_stock_products > 0">
+                    <div class="agro-panel-title">⚠️ Low Stock Alert</div>
+                    <p><strong t-esc="state.summary.low_stock_products"/> products below minimum stock level.</p>
+                    <table class="agro-table">
+                        <tr t-foreach="state.lowStock.slice(0,5)" t-as="p" t-key="p.id">
+                            <td t-esc="p.name"/>
+                            <td t-esc="this.fmtQty(p.qty_available)"/>
+                            <td><span t-att-class="'agro-badge agro-badge-' + p.status" t-esc="p.status.toUpperCase()"/></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="agro-panel agro-panel-danger" t-if="state.summary.expiring_products > 0">
+                    <div class="agro-panel-title">⏰ Expiry Alert</div>
+                    <p><strong t-esc="state.summary.expiring_products"/> batches expiring or expired.</p>
+                    <table class="agro-table">
+                        <tr><td>Expired</td><td class="agro-val agro-growth-down" t-esc="state.expiryAnalysis.expired || 0"/></tr>
+                        <tr><td>Expiring ≤30 days</td><td class="agro-val agro-growth-down" t-esc="state.expiryAnalysis.expiring_30 || 0"/></tr>
+                        <tr><td>Expiring ≤90 days</td><td class="agro-val" t-esc="state.expiryAnalysis.expiring_90 || 0"/></tr>
+                        <tr><td>Safe Stock</td><td class="agro-val agro-growth-up" t-esc="state.expiryAnalysis.safe || 0"/></tr>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <!-- TAB: PROFIT -->
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <div t-if="state.activeTab === 'profit'" class="agro-tab-content">
+
+            <div class="agro-section-title">Profit KPIs</div>
+            <div class="agro-cards-grid agro-cards-4">
+                <div class="agro-card agro-card-green">
+                    <div class="agro-card-icon">📅</div>
+                    <div class="agro-card-label">Today's Profit</div>
+                    <div class="agro-card-value" t-esc="this.fmt(state.profitKpis.today)"/>
+                </div>
+                <div class="agro-card agro-card-teal">
+                    <div class="agro-card-icon">📆</div>
+                    <div class="agro-card-label">Monthly Profit</div>
+                    <div class="agro-card-value" t-esc="this.fmt(state.profitKpis.this_month)"/>
+                </div>
+                <div class="agro-card agro-card-blue">
+                    <div class="agro-card-icon">🗓️</div>
+                    <div class="agro-card-label">Yearly Profit</div>
+                    <div class="agro-card-value" t-esc="this.fmt(state.profitKpis.this_year)"/>
+                </div>
+                <div class="agro-card agro-card-purple">
+                    <div class="agro-card-icon">🏆</div>
+                    <div class="agro-card-label">Lifetime Profit</div>
+                    <div class="agro-card-value" t-esc="this.fmt(state.profitKpis.lifetime)"/>
+                </div>
+            </div>
+
+            <div class="agro-section-title">Cost Price Analysis</div>
+            <div t-foreach="[['month','This Month'],['year','This Year'],['lifetime','Lifetime']]" t-as="period" t-key="period[0]">
+                <t t-set="data" t-value="state.costAnalysis[period[0]]"/>
+                <div class="agro-panel" t-if="data">
+                    <div class="agro-panel-title" t-esc="period[1]"/>
+                    <div class="agro-cards-grid agro-cards-4">
+                        <div class="agro-mini-card">
+                            <div class="agro-mini-label">Total Sales</div>
+                            <div class="agro-mini-val" t-esc="this.fmt(data.sales)"/>
+                        </div>
+                        <div class="agro-mini-card">
+                            <div class="agro-mini-label">Total Cost</div>
+                            <div class="agro-mini-val" t-esc="this.fmt(data.cost)"/>
+                        </div>
+                        <div class="agro-mini-card agro-card-green">
+                            <div class="agro-mini-label">Gross Profit</div>
+                            <div class="agro-mini-val" t-esc="this.fmt(data.profit)"/>
+                        </div>
+                        <div class="agro-mini-card agro-card-blue">
+                            <div class="agro-mini-label">Profit Margin</div>
+                            <div class="agro-mini-val" t-esc="(data.margin_pct || 0).toFixed(2) + '%'"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="agro-section-title">Top Categories by Profit</div>
+            <table class="agro-table agro-table-full">
+                <thead>
+                    <tr><th>Category</th><th>Sales</th><th>Profit</th><th>Qty Sold</th></tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="state.categoryPerf" t-as="c" t-key="c.category_id">
+                        <td t-esc="c.category || 'Uncategorized'"/>
+                        <td t-esc="this.fmt(c.sales)"/>
+                        <td t-esc="this.fmt(c.profit)"/>
+                        <td t-esc="this.fmtQty(c.qty_sold)"/>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="agro-section-title">Top Selling Products (by Sales)</div>
+            <table class="agro-table agro-table-full">
+                <thead>
+                    <tr><th>#</th><th>Product</th><th>Qty Sold</th><th>Sales</th><th>Profit</th></tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="state.topProducts.slice(0,10)" t-as="p" t-key="p.product_id">
+                        <td t-esc="p_index + 1"/>
+                        <td t-esc="p.product_name"/>
+                        <td t-esc="this.fmtQty(p.qty_sold)"/>
+                        <td t-esc="this.fmt(p.sales)"/>
+                        <td t-esc="this.fmt(p.profit)"/>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="agro-section-title">Top Most Profitable Products</div>
+            <table class="agro-table agro-table-full">
+                <thead>
+                    <tr><th>#</th><th>Product</th><th>Qty Sold</th><th>Sales</th><th>Profit</th></tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="state.topProfitProducts.slice(0,10)" t-as="p" t-key="p.product_id">
+                        <td t-esc="p_index + 1"/>
+                        <td t-esc="p.product_name"/>
+                        <td t-esc="this.fmtQty(p.qty_sold)"/>
+                        <td t-esc="this.fmt(p.sales)"/>
+                        <td t-esc="this.fmt(p.profit)"/>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <!-- TAB: COMPARISON -->
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <div t-if="state.activeTab === 'comparison'" class="agro-tab-content">
+
+            <div class="agro-section-title">Month-over-Month Comparison</div>
+            <div class="agro-cards-grid agro-cards-4" t-if="state.momComparison.current_month">
+                <t t-set="mom" t-value="state.momComparison"/>
+                <div class="agro-card agro-card-blue">
+                    <div class="agro-card-label">Current Month Sales</div>
+                    <div class="agro-card-value" t-esc="this.fmt(mom.current_month.sales)"/>
+                </div>
+                <div class="agro-card agro-card-indigo">
+                    <div class="agro-card-label">Previous Month Sales</div>
+                    <div class="agro-card-value" t-esc="this.fmt(mom.previous_month.sales)"/>
+                </div>
+                <div t-att-class="'agro-card ' + (mom.sales_diff >= 0 ? 'agro-card-green' : 'agro-card-red')">
+                    <div class="agro-card-label">Sales Difference</div>
+                    <div class="agro-card-value" t-esc="this.fmt(Math.abs(mom.sales_diff))"/>
+                    <div class="agro-card-sub">
+                        <span t-att-class="this.growthClass(mom.sales_growth_pct)"
+                              t-esc="this.growthIcon(mom.sales_growth_pct) + ' ' + this.fmtPct(mom.sales_growth_pct)"/>
+                    </div>
+                </div>
+                <div t-att-class="'agro-card ' + (mom.profit_diff >= 0 ? 'agro-card-green' : 'agro-card-red')">
+                    <div class="agro-card-label">Profit Growth</div>
+                    <div class="agro-card-value" t-esc="this.fmt(Math.abs(mom.profit_diff))"/>
+                    <div class="agro-card-sub">
+                        <span t-att-class="this.growthClass(mom.profit_growth_pct)"
+                              t-esc="this.growthIcon(mom.profit_growth_pct) + ' ' + this.fmtPct(mom.profit_growth_pct)"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="agro-section-title">Year-over-Year Comparison</div>
+            <div t-if="state.yoyComparison.annual">
+                <t t-set="yoy" t-value="state.yoyComparison.annual"/>
+                <div class="agro-cards-grid agro-cards-4">
+                    <div class="agro-card agro-card-blue">
+                        <div class="agro-card-label">Current Year Sales</div>
+                        <div class="agro-card-value" t-esc="this.fmt(yoy.current_year.sales)"/>
+                    </div>
+                    <div class="agro-card agro-card-indigo">
+                        <div class="agro-card-label">Previous Year Sales</div>
+                        <div class="agro-card-value" t-esc="this.fmt(yoy.previous_year.sales)"/>
+                    </div>
+                    <div t-att-class="'agro-card ' + (yoy.sales_diff >= 0 ? 'agro-card-green' : 'agro-card-red')">
+                        <div class="agro-card-label">Annual Sales Growth</div>
+                        <div class="agro-card-value" t-esc="this.fmt(Math.abs(yoy.sales_diff))"/>
+                        <div class="agro-card-sub">
+                            <span t-att-class="this.growthClass(yoy.sales_growth_pct)"
+                                  t-esc="this.growthIcon(yoy.sales_growth_pct) + ' ' + this.fmtPct(yoy.sales_growth_pct)"/>
+                        </div>
+                    </div>
+                    <div t-att-class="'agro-card ' + (yoy.profit_diff >= 0 ? 'agro-card-green' : 'agro-card-red')">
+                        <div class="agro-card-label">Annual Profit Growth</div>
+                        <div class="agro-card-value" t-esc="this.fmt(Math.abs(yoy.profit_diff))"/>
+                        <div class="agro-card-sub">
+                            <span t-att-class="this.growthClass(yoy.profit_growth_pct)"
+                                  t-esc="this.growthIcon(yoy.profit_growth_pct) + ' ' + this.fmtPct(yoy.profit_growth_pct)"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="agro-chart-box">
+                <canvas id="chart_comparison_sales" height="100"/>
+            </div>
+
+            <div class="agro-section-title">Best Performing Months</div>
+            <div class="agro-two-col" t-if="state.bestMonths.best_sales_month">
+                <div class="agro-card agro-card-blue">
+                    <div class="agro-card-icon">🏆</div>
+                    <div class="agro-card-label">Best Sales Month</div>
+                    <div class="agro-card-value" t-esc="state.bestMonths.best_sales_month.label"/>
+                    <div class="agro-card-sub" t-esc="this.fmt(state.bestMonths.best_sales_month.amount)"/>
+                </div>
+                <div class="agro-card agro-card-green">
+                    <div class="agro-card-icon">💎</div>
+                    <div class="agro-card-label">Best Profit Month</div>
+                    <div class="agro-card-value" t-esc="state.bestMonths.best_profit_month.label"/>
+                    <div class="agro-card-sub" t-esc="this.fmt(state.bestMonths.best_profit_month.amount)"/>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <!-- TAB: CHARTS -->
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <div t-if="state.activeTab === 'charts'" class="agro-tab-content">
+
+            <div class="agro-section-title">Sales by Category</div>
+            <div class="agro-chart-box agro-chart-small"><canvas id="chart_cat_pie"/></div>
+
+            <div class="agro-section-title">Top 10 Products by Sales</div>
+            <div class="agro-chart-box"><canvas id="chart_top_products" height="120"/></div>
+
+            <div class="agro-section-title">Payment Method Analysis</div>
+            <div class="agro-chart-box agro-chart-small"><canvas id="chart_payment"/></div>
+
+            <div class="agro-section-title">Outstanding Analysis</div>
+            <div class="agro-chart-box agro-chart-small"><canvas id="chart_outstanding"/></div>
+
+            <div class="agro-section-title">Village Sales Analysis</div>
+            <div class="agro-chart-box"><canvas id="chart_village" height="120"/></div>
+
+            <div class="agro-section-title">Expiry Analysis</div>
+            <div class="agro-chart-box agro-chart-small"><canvas id="chart_expiry"/></div>
+
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <!-- TAB: STOCK -->
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <div t-if="state.activeTab === 'stock'" class="agro-tab-content">
+
+            <div class="agro-section-title">Stock Valuation</div>
+            <div class="agro-cards-grid agro-cards-4">
+                <div class="agro-card agro-card-blue">
+                    <div class="agro-card-label">Total Products</div>
+                    <div class="agro-card-value" t-esc="state.stockValuation.total_products || 0"/>
+                </div>
+                <div class="agro-card agro-card-indigo">
+                    <div class="agro-card-label">Purchase Value</div>
+                    <div class="agro-card-value" t-esc="this.fmt(state.stockValuation.purchase_value)"/>
+                </div>
+                <div class="agro-card agro-card-purple">
+                    <div class="agro-card-label">Selling Value</div>
+                    <div class="agro-card-value" t-esc="this.fmt(state.stockValuation.selling_value)"/>
+                </div>
+                <div class="agro-card agro-card-green">
+                    <div class="agro-card-label">Estimated Profit</div>
+                    <div class="agro-card-value" t-esc="this.fmt(state.stockValuation.estimated_profit)"/>
+                </div>
+            </div>
+
+            <div class="agro-section-title">Low Stock Products</div>
+            <table class="agro-table agro-table-full" t-if="state.lowStock.length">
+                <thead><tr><th>Product</th><th>Category</th><th>On Hand</th><th>Min Stock</th><th>Status</th></tr></thead>
+                <tbody>
+                    <tr t-foreach="state.lowStock" t-as="p" t-key="p.id">
+                        <td t-esc="p.name"/>
+                        <td t-esc="p.category"/>
+                        <td t-esc="this.fmtQty(p.qty_available)"/>
+                        <td t-esc="this.fmtQty(p.min_stock)"/>
+                        <td><span t-att-class="'agro-badge agro-badge-' + p.status" t-esc="p.status.toUpperCase()"/></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div t-else="" class="agro-empty">✅ All products above minimum stock level.</div>
+
+            <div class="agro-section-title">Dead Stock (3+ Months No Sales)</div>
+            <table class="agro-table agro-table-full" t-if="state.deadStock.length">
+                <thead><tr><th>Product</th><th>Category</th><th>On Hand</th><th>Months Without Sale</th><th>Last Sold</th></tr></thead>
+                <tbody>
+                    <tr t-foreach="state.deadStock" t-as="p" t-key="p.id">
+                        <td t-esc="p.name"/>
+                        <td t-esc="p.category"/>
+                        <td t-esc="this.fmtQty(p.qty_available)"/>
+                        <td t-esc="p.dead_stock_months === 999 ? 'Never Sold' : p.dead_stock_months"/>
+                        <td t-esc="p.last_sold || '—'"/>
+                    </tr>
+                </tbody>
+            </table>
+            <div t-else="" class="agro-empty">✅ No dead stock detected.</div>
+
+            <div class="agro-section-title">Village Sales</div>
+            <table class="agro-table agro-table-full" t-if="state.villageSales.length">
+                <thead><tr><th>Village</th><th>Sales</th><th>Profit</th><th>Customers</th></tr></thead>
+                <tbody>
+                    <tr t-foreach="state.villageSales" t-as="v" t-key="v.village">
+                        <td t-esc="v.village"/>
+                        <td t-esc="this.fmt(v.sales)"/>
+                        <td t-esc="this.fmt(v.profit)"/>
+                        <td t-esc="v.customers"/>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <!-- TAB: DATE RANGE REPORT -->
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <div t-if="state.activeTab === 'daterange'" class="agro-tab-content">
+
+            <div class="agro-section-title">Date to Date Report</div>
+            <div class="agro-date-range-form">
+                <label>From: <input type="date" t-model="state.dateFrom"/></label>
+                <label>To: <input type="date" t-model="state.dateTo"/></label>
+                <button class="agro-btn-primary" t-on-click="loadDateRange">Generate Report</button>
+            </div>
+
+            <div t-if="state.dateRangeResult" class="agro-date-range-result">
+                <div class="agro-cards-grid agro-cards-4">
+                    <div class="agro-card agro-card-blue">
+                        <div class="agro-card-label">Total Sales</div>
+                        <div class="agro-card-value" t-esc="this.fmt(state.dateRangeResult.total_sales)"/>
+                    </div>
+                    <div class="agro-card agro-card-green">
+                        <div class="agro-card-label">Total Profit</div>
+                        <div class="agro-card-value" t-esc="this.fmt(state.dateRangeResult.total_profit)"/>
+                    </div>
+                    <div class="agro-card agro-card-indigo">
+                        <div class="agro-card-label">Total Cost</div>
+                        <div class="agro-card-value" t-esc="this.fmt(state.dateRangeResult.total_cost)"/>
+                    </div>
+                    <div class="agro-card agro-card-teal">
+                        <div class="agro-card-label">Profit Margin</div>
+                        <div class="agro-card-value" t-esc="(state.dateRangeResult.profit_margin_pct || 0).toFixed(2) + '%'"/>
+                    </div>
+                </div>
+
+                <div class="agro-chart-box" t-if="state.dateRangeResult.daily.length">
+                    <canvas id="chart_date_range" height="100"/>
+                </div>
+
+                <table class="agro-table agro-table-full" t-if="state.dateRangeResult.daily.length">
+                    <thead><tr><th>Date</th><th>Sales</th><th>Profit</th><th>Invoices</th><th>Customers</th></tr></thead>
+                    <tbody>
+                        <tr t-foreach="state.dateRangeResult.daily" t-as="d" t-key="d.date">
+                            <td t-esc="d.date"/>
+                            <td t-esc="this.fmt(d.sales)"/>
+                            <td t-esc="this.fmt(d.profit)"/>
+                            <td t-esc="d.invoices"/>
+                            <td t-esc="d.customers"/>
+                        </tr>
+                    </tbody>
+                </table>
+                <div t-else="" class="agro-empty">No sales recorded in this date range.</div>
+            </div>
+
+        </div>
+
+        </t><!-- end t-else loading -->
+    </div>
+</t>
+
+</templates>
