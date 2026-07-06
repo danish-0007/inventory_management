@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ── Stock Audit: List View ── -->
+    <record id="view_agro_stock_audit_list" model="ir.ui.view">
+        <field name="name">agro.stock.audit.list</field>
+        <field name="model">agro.stock.audit</field>
+        <field name="arch" type="xml">
+            <tree string="Stock Audit Log" create="false" delete="false" edit="false">
+                <field name="date"/>
+                <field name="user_id"/>
+                <field name="product_id"/>
+                <field name="lot_id"/>
+                <field name="movement_type" widget="badge"/>
+                <field name="qty_change"/>
+                <field name="reason"/>
+                <field name="reference"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ── Stock Audit: Search View ── -->
+    <record id="view_agro_stock_audit_search" model="ir.ui.view">
+        <field name="name">agro.stock.audit.search</field>
+        <field name="model">agro.stock.audit</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="product_id"/>
+                <field name="user_id"/>
+                <field name="lot_id"/>
+                <field name="reference"/>
+                <filter name="type_purchase"   string="Purchase In"     domain="[('movement_type','=','purchase')]"/>
+                <filter name="type_sale"       string="Sale Out"        domain="[('movement_type','=','sale')]"/>
+                <filter name="type_adjustment" string="Adjustments"     domain="[('movement_type','=','adjustment')]"/>
+                <filter name="type_damaged"    string="Damaged/Written Off" domain="[('movement_type','in',['damaged','expired'])]"/>
+                <separator/>
+                <filter name="today"    string="Today"     domain="[('date','&gt;=', (context_today()).strftime('%Y-%m-%d 00:00:00'))]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_product"  string="Product"  context="{'group_by': 'product_id'}"/>
+                    <filter name="group_type"     string="Type"     context="{'group_by': 'movement_type'}"/>
+                    <filter name="group_user"     string="User"     context="{'group_by': 'user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ── Stock Audit: Action ── -->
+    <record id="action_agro_stock_audit" model="ir.actions.act_window">
+        <field name="name">Stock Audit Log</field>
+        <field name="res_model">agro.stock.audit</field>
+        <field name="view_mode">tree</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_agro_stock_audit_list')}),
+        ]"/>
+        <field name="search_view_id" ref="view_agro_stock_audit_search"/>
+        <field name="context">{'search_default_group_product': 0}</field>
+    </record>
+
+</odoo>

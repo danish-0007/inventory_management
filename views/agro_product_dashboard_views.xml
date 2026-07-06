@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ══════════════════════════════════════════════════════
+         PRODUCT DASHBOARD — analytical fields per product
+         ══════════════════════════════════════════════════════ -->
+
+    <record id="view_agro_product_dashboard_list" model="ir.ui.view">
+        <field name="name">product.template.dashboard.list</field>
+        <field name="model">product.template</field>
+        <field name="arch" type="xml">
+            <tree string="Product Dashboard"
+                  decoration-danger="stock_status == 'out'"
+                  decoration-warning="stock_status == 'low'"
+                  create="false" edit="false">
+                <field name="name" string="Product"/>
+                <field name="agro_company_name" string="Brand"/>
+                <field name="agro_category_id" string="Category"/>
+                <field name="qty_available" string="On Hand"/>
+                <field name="min_stock" string="Min Stock"/>
+                <field name="stock_status" widget="badge"
+                    decoration-success="stock_status == 'ok'"
+                    decoration-warning="stock_status == 'low'"
+                    decoration-danger="stock_status == 'out'"/>
+                <field name="agro_last_purchase_date" string="Last Purchased"/>
+                <field name="agro_last_sold_date" string="Last Sold"/>
+                <field name="agro_avg_daily_sales" string="Avg Daily Sales" optional="show"/>
+                <field name="agro_avg_monthly_sales" string="Avg Monthly Sales" optional="show"/>
+                <field name="agro_dead_stock_months" string="Months w/o Sale" optional="show"/>
+                <field name="agro_reorder_qty" string="Suggested Reorder" optional="show"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_agro_product_dashboard_search" model="ir.ui.view">
+        <field name="name">product.template.dashboard.search</field>
+        <field name="model">product.template</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="agro_category_id"/>
+                <field name="agro_company_name"/>
+                <filter name="low_stock"  string="Low / Out of Stock" domain="[('stock_status','in',['low','out'])]"/>
+                <filter name="dead_3m"    string="Dead Stock (3+ months)" domain="[('agro_dead_stock_months','&gt;=',3),('qty_available','&gt;',0)]"/>
+                <filter name="dead_6m"    string="Dead Stock (6+ months)" domain="[('agro_dead_stock_months','&gt;=',6),('qty_available','&gt;',0)]"/>
+                <filter name="dead_12m"   string="Dead Stock (12+ months)" domain="[('agro_dead_stock_months','&gt;=',12),('qty_available','&gt;',0)]"/>
+                <filter name="never_sold" string="Never Sold" domain="[('agro_dead_stock_months','=',999),('qty_available','&gt;',0)]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_category" string="Category" context="{'group_by': 'agro_category_id'}"/>
+                    <filter name="group_status"   string="Stock Status" context="{'group_by': 'stock_status'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_agro_product_dashboard" model="ir.actions.act_window">
+        <field name="name">Product Dashboard</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">tree</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_agro_product_dashboard_list')}),
+        ]"/>
+        <field name="search_view_id" ref="view_agro_product_dashboard_search"/>
+        <field name="domain">[('is_sellable','=',True)]</field>
+    </record>
+
+    <!-- Dead Stock shortcut action -->
+    <record id="action_agro_dead_stock" model="ir.actions.act_window">
+        <field name="name">Dead Stock</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">tree</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_agro_product_dashboard_list')}),
+        ]"/>
+        <field name="search_view_id" ref="view_agro_product_dashboard_search"/>
+        <field name="domain">[('agro_dead_stock_months','&gt;=',3),('qty_available','&gt;',0)]</field>
+        <field name="context">{'search_default_dead_3m': 1}</field>
+    </record>
+
+    <!-- ══════════════════════════════════════════════════════
+         STOCK VALUATION — tabular view of batch-level values
+         ══════════════════════════════════════════════════════ -->
+
+    <record id="view_agro_stock_valuation_list" model="ir.ui.view">
+        <field name="name">stock.lot.valuation.list</field>
+        <field name="model">stock.lot</field>
+        <field name="arch" type="xml">
+            <tree string="Stock Valuation" create="false" edit="false">
+                <field name="product_id" string="Product"/>
+                <field name="name" string="Batch"/>
+                <field name="expiration_date" string="Expiry"/>
+                <field name="expiry_status" widget="badge"
+                    decoration-success="expiry_status == 'ok'"
+                    decoration-warning="expiry_status == 'expiring'"
+                    decoration-danger="expiry_status == 'expired'"/>
+                <field name="product_qty" string="Qty in Stock"/>
+                <field name="unit_price" string="Cost Price"/>
+                <field name="purchase_date" string="Purchased"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_agro_stock_valuation" model="ir.actions.act_window">
+        <field name="name">Stock Valuation</field>
+        <field name="res_model">stock.lot</field>
+        <field name="view_mode">tree</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_agro_stock_valuation_list')}),
+        ]"/>
+        <field name="domain">[('product_qty','&gt;',0)]</field>
+        <field name="context">{'search_default_group_by_product': 0}</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Client action: loads the OWL AgroDashboard component -->
+    <record id="action_agro_business_dashboard" model="ir.actions.client">
+        <field name="name">Business Dashboard</field>
+        <field name="tag">agro_business_dashboard</field>
+    </record>
+
+</odoo>

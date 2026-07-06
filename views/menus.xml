@@ -7,7 +7,14 @@
         sequence="10"
         web_icon="inventory_management,static/description/icon.png"/>
 
-    <!-- Default landing when app opens — safe list, not a popup -->
+    <!-- ── Dashboard — lands first when app opens ── -->
+    <menuitem id="menu_agro_dashboard"
+        name="📊 Dashboard"
+        parent="menu_agro_root"
+        action="action_agro_business_dashboard"
+        sequence="1"/>
+
+    <!-- Customers -->
     <menuitem id="menu_agro_customers"
         name="Customers"
         parent="menu_agro_root"
@@ -34,6 +41,14 @@
         name="Stock Overview" parent="menu_agro_products_root" action="action_agro_stock_overview" sequence="2"/>
     <menuitem id="menu_agro_low_stock"
         name="Low Stock" parent="menu_agro_products_root" action="action_agro_low_stock" sequence="3"/>
+    <menuitem id="menu_agro_product_dashboard"
+        name="Product Dashboard" parent="menu_agro_products_root" action="action_agro_product_dashboard" sequence="4"/>
+    <menuitem id="menu_agro_dead_stock"
+        name="Dead Stock" parent="menu_agro_products_root" action="action_agro_dead_stock" sequence="5"/>
+    <menuitem id="menu_agro_stock_valuation"
+        name="Stock Valuation" parent="menu_agro_products_root" action="action_agro_stock_valuation" sequence="6"/>
+    <menuitem id="menu_agro_stock_audit"
+        name="Stock Audit Log" parent="menu_agro_products_root" action="action_agro_stock_audit" sequence="7"/>
 
     <!-- Batches section -->
     <menuitem id="menu_agro_batches_root" name="Batches" parent="menu_agro_root" sequence="30"/>
@@ -61,7 +76,7 @@
     <menuitem id="menu_agro_top_customers"
         name="Top Customers" parent="menu_agro_root" action="action_agro_top_customers" sequence="46"/>
 
-    <!-- Configuration — Units removed; use Odoo's native Units of Measure app instead -->
+    <!-- Configuration -->
     <menuitem id="menu_agro_config_root" name="Configuration" parent="menu_agro_root" sequence="100"/>
     <menuitem id="menu_agro_config_categories"
         name="Categories" parent="menu_agro_config_root" action="action_inventory_category" sequence="1"/>
