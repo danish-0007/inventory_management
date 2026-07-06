@@ -13,3 +13,5 @@ from . import sale_order_ext
 from . import agro_sale_wizard
 from . import agro_purchase_wizard
 from . import uom_ext
+from . import agro_dashboard
+from . import agro_stock_audit
