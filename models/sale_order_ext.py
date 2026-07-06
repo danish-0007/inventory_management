@@ -10,6 +10,7 @@ class SaleOrderExt(models.Model):
     agro_payment_method = fields.Selection([
         ('cash', 'Cash'),
         ('upi', 'UPI'),
+        ('bank_transfer', 'Bank Transfer'),
         ('credit', 'Credit'),
         ('other', 'Other'),
     ], string='Payment Method', default='cash')
@@ -27,6 +28,15 @@ class SaleOrderExt(models.Model):
     agro_products_summary = fields.Char(
         string='Products', compute='_compute_agro_products_summary', store=True
     )
+    agro_total_profit = fields.Monetary(
+        string='Total Profit', compute='_compute_agro_profit_totals',
+        store=True, currency_field='currency_id'
+    )
+    agro_cost_total = fields.Monetary(
+        string='Cost Total', compute='_compute_agro_profit_totals',
+        store=True, currency_field='currency_id'
+    )
+
     @api.depends('amount_total', 'agro_amount_paid')
     def _compute_agro_amount_outstanding(self):
         for order in self:
@@ -53,6 +63,12 @@ class SaleOrderExt(models.Model):
     def _compute_agro_products_summary(self):
         for order in self:
             order.agro_products_summary = ', '.join(order.order_line.mapped('product_id.name'))
+
+    @api.depends('order_line.agro_profit', 'order_line.agro_cost')
+    def _compute_agro_profit_totals(self):
+        for order in self:
+            order.agro_total_profit = sum(order.order_line.mapped('agro_profit'))
+            order.agro_cost_total = sum(order.order_line.mapped('agro_cost'))
 
     def action_confirm(self):
         # Odoo's own action_confirm() always resets date_order to now() (_prepare_confirmation_values) —
@@ -81,9 +97,28 @@ class SaleOrderExt(models.Model):
 
 
 class SaleOrderLineExt(models.Model):
-    # Stores the batch sold per line — for receipt printing and history traceability
+    # Stores the batch sold per line — for receipt printing, profit computation, and history traceability
     _inherit = 'sale.order.line'
 
     agro_lot_id = fields.Many2one('stock.lot', string='Batch')
     agro_sold_qty = fields.Float(string='Sold Qty')
     agro_sold_uom_id = fields.Many2one('uom.uom', string='Sold Unit')
+    agro_profit = fields.Monetary(
+        string='Line Profit', compute='_compute_agro_profit',
+        store=True, currency_field='currency_id'
+    )
+    agro_cost = fields.Monetary(
+        string='Line Cost', compute='_compute_agro_profit',
+        store=True, currency_field='currency_id'
+    )
+
+    @api.depends('product_uom_qty', 'price_unit', 'discount', 'agro_lot_id', 'agro_lot_id.unit_price')
+    def _compute_agro_profit(self):
+        # Profit = (sell_price_after_discount - lot_cost_price) × qty_in_base_uom
+        # cost defaults to 0 when lot has no recorded purchase cost (profit = full revenue)
+        for line in self:
+            qty = line.product_uom_qty
+            sell_price = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
+            cost_price = line.agro_lot_id.unit_price if line.agro_lot_id else 0.0
+            line.agro_cost = cost_price * qty
+            line.agro_profit = (sell_price - cost_price) * qty
