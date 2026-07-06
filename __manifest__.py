@@ -2,10 +2,10 @@
 {
     'name': 'Agro & Seeds Shop — Inventory',
     'summary': 'Custom inventory, sales and purchase management for agro and seeds retail shop',
-    'description': 'Simplified inventory module for a small agro shop. Products, batch tracking, expiry alerts, sales wizard, purchase wizard, and receipt printing.',
+    'description': 'Simplified inventory module for a small agro shop. Products, batch tracking, expiry alerts, sales wizard, purchase wizard, receipt printing, and business analytics dashboard.',
     'author': 'Custom',
     'category': 'Inventory',
-    'version': '16.0.1.0.0',
+    'version': '16.0.2.0.0',
     'license': 'LGPL-3',
     'depends': ['uom', 'product', 'stock', 'sale', 'purchase', 'mail', 'product_expiry'],
     'data': [
@@ -16,6 +16,7 @@
         'data/uom_data.xml',
         'data/agro_crop_data.xml',
         'data/agro_cron_data.xml',
+        'data/agro_dashboard_cron.xml',
         'views/inventory_category_views.xml',
         'views/inventory_config_views.xml',
         'views/agro_tax_rate_views.xml',
@@ -35,6 +36,18 @@
         'views/sale_order_overdue_views.xml',
         'views/res_partner_top_customers_views.xml',
         'views/stock_overview_views.xml',
+        'views/agro_product_dashboard_views.xml',
+        'views/agro_stock_audit_views.xml',
+        'views/agro_dashboard_views.xml',
         'views/menus.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            # Chart.js from CDN — loaded before our JS
+            'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js',
+            'inventory_management/static/src/css/agro_dashboard.css',
+            'inventory_management/static/src/xml/agro_dashboard_templates.xml',
+            'inventory_management/static/src/js/agro_dashboard.js',
+        ],
+    },
 }

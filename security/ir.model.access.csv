@@ -12,3 +12,5 @@ access_agro_customer_note,agro.customer.note,model_agro_customer_note,base.group
 access_agro_customer_payment,agro.customer.payment,model_agro_customer_payment,base.group_user,1,1,1,1
 access_agro_customer_payment_allocation,agro.customer.payment.allocation,model_agro_customer_payment_allocation,base.group_user,1,1,1,1
 access_agro_tax_rate,agro.tax.rate,model_agro_tax_rate,base.group_user,1,1,1,1
+access_agro_dashboard,agro.dashboard,model_agro_dashboard,base.group_user,1,0,0,0
+access_agro_stock_audit_read,agro.stock.audit.read,model_agro_stock_audit,base.group_user,1,0,1,0

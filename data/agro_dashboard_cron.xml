@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Nightly cron: refresh stored product analytics fields (last sold, avg sales, dead stock, reorder) -->
+    <!-- Runs at 1:00 AM daily — after the overdue cron which runs at midnight -->
+    <record id="cron_agro_refresh_product_stats" model="ir.cron">
+        <field name="name">Agro: Refresh Product Analytics</field>
+        <field name="model_id" ref="inventory_management.model_agro_dashboard"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_refresh_product_stats()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+        <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 01:00:00')"/>
+    </record>
+
+</odoo>
