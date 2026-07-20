@@ -3,7 +3,6 @@
    Odoo 16 / OWL component scoped under .agro-dashboard
    ═══════════════════════════════════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 .agro-dashboard {
     font-family: 'Inter', sans-serif;
