@@ -460,23 +460,12 @@ class AgroDashboard(models.AbstractModel):
 
     @api.model
     def get_stock_valuation(self):
-        self.env.cr.execute(
-            """
-            SELECT
-                COUNT(DISTINCT sl.product_id)           AS total_products,
-                SUM(sl.product_qty * sl.unit_price)     AS purchase_value,
-                SUM(sl.product_qty * pt.list_price)     AS selling_value
-            FROM stock_lot sl
-            JOIN product_product pp ON pp.id = sl.product_id
-            JOIN product_template pt ON pt.id = pp.product_tmpl_id
-            WHERE sl.product_qty > 0
-            """
-        )
-        row = self.env.cr.fetchone()
-        purchase_val = float(row[1] or 0)
-        selling_val = float(row[2] or 0)
+        lots = self.env['stock.lot'].search([('product_qty', '>', 0)])
+        total_products = len(lots.mapped('product_id'))
+        purchase_val = sum(lot.product_qty * lot.unit_price for lot in lots)
+        selling_val = sum(lot.product_qty * lot.product_id.list_price for lot in lots)
         return {
-            'total_products': int(row[0] or 0),
+            'total_products': total_products,
             'purchase_value': purchase_val,
             'selling_value': selling_val,
             'estimated_profit': selling_val - purchase_val,
