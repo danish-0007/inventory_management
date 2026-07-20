@@ -159,11 +159,26 @@ export class AgroDashboard extends Component {
             rpc("/agro/dashboard/dead_stock", { months: 3 }),
         ]);
         Object.assign(this.state, {
-            summary, salesKpis, profitKpis, costAnalysis, outstanding,
-            invoiceSummary, paymentSummary, categoryPerf, topProducts,
-            topProfitProducts, lowStock, salesTrend, momComparison,
-            yoyComparison, bestMonths, villageSales, stockValuation,
-            expiryAnalysis, deadStock, loading: false,
+            summary: summary || {},
+            salesKpis: salesKpis || {},
+            profitKpis: profitKpis || {},
+            costAnalysis: costAnalysis || {},
+            outstanding: outstanding || {},
+            invoiceSummary: invoiceSummary || {},
+            paymentSummary: paymentSummary || {},
+            categoryPerf: categoryPerf || [],
+            topProducts: topProducts || [],
+            topProfitProducts: topProfitProducts || [],
+            lowStock: lowStock || [],
+            salesTrend: salesTrend || [],
+            momComparison: momComparison || {},
+            yoyComparison: yoyComparison || {},
+            bestMonths: bestMonths || {},
+            villageSales: villageSales || [],
+            stockValuation: stockValuation || {},
+            expiryAnalysis: expiryAnalysis || {},
+            deadStock: deadStock || [],
+            loading: false,
         });
         // Render charts after DOM update
         setTimeout(() => this._renderCharts(), 100);
