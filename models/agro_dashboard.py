@@ -278,7 +278,15 @@ class AgroDashboard(models.AbstractModel):
         Returns list of {label, sales, profit} dicts ordered ascending by date.
         """
         today = date.today()
+        trend_map = {}
+        
         if period == 'daily':
+            start_date = today - timedelta(days=30)
+            curr = start_date
+            while curr <= today:
+                trend_map[str(curr)] = {'sales': 0.0, 'profit': 0.0}
+                curr += timedelta(days=1)
+                
             self.env.cr.execute(
                 """
                 SELECT
@@ -292,9 +300,21 @@ class AgroDashboard(models.AbstractModel):
                 GROUP BY so.date_order::date
                 ORDER BY label
                 """,
-                [today - timedelta(days=30)]
+                [start_date]
             )
+            for r in self.env.cr.dictfetchall():
+                lbl = str(r['label'])
+                if lbl in trend_map:
+                    trend_map[lbl] = {'sales': float(r['sales'] or 0), 'profit': float(r['profit'] or 0)}
+
         elif period == 'monthly':
+            start_date = today - relativedelta(months=12)
+            curr = start_date
+            while curr <= today:
+                lbl = curr.strftime('%Y-%m')
+                trend_map[lbl] = {'sales': 0.0, 'profit': 0.0}
+                curr += relativedelta(months=1)
+                
             self.env.cr.execute(
                 """
                 SELECT
@@ -308,9 +328,20 @@ class AgroDashboard(models.AbstractModel):
                 GROUP BY TO_CHAR(so.date_order, 'YYYY-MM')
                 ORDER BY label
                 """,
-                [today - relativedelta(months=12)]
+                [start_date]
             )
+            for r in self.env.cr.dictfetchall():
+                lbl = str(r['label']).strip()
+                if lbl in trend_map:
+                    trend_map[lbl] = {'sales': float(r['sales'] or 0), 'profit': float(r['profit'] or 0)}
+
         else:  # yearly
+            start_date = today - relativedelta(years=5)
+            curr_year = start_date.year
+            while curr_year <= today.year:
+                trend_map[str(curr_year)] = {'sales': 0.0, 'profit': 0.0}
+                curr_year += 1
+                
             self.env.cr.execute(
                 """
                 SELECT
@@ -324,10 +355,15 @@ class AgroDashboard(models.AbstractModel):
                 GROUP BY EXTRACT(YEAR FROM so.date_order)
                 ORDER BY label
                 """,
-                [today - relativedelta(years=5)]
+                [start_date]
             )
-        rows = self.env.cr.dictfetchall()
-        return [{'label': str(r['label']), 'sales': float(r['sales'] or 0), 'profit': float(r['profit'] or 0)} for r in rows]
+            for r in self.env.cr.dictfetchall():
+                lbl = str(r['label'])
+                if lbl in trend_map:
+                    trend_map[lbl] = {'sales': float(r['sales'] or 0), 'profit': float(r['profit'] or 0)}
+
+        rows = [{'label': k, 'sales': trend_map[k]['sales'], 'profit': trend_map[k]['profit']} for k in sorted(trend_map.keys())]
+        return rows
 
     # ─── Section 11: Business Comparison ─────────────────────────────────────────
 
@@ -499,6 +535,19 @@ class AgroDashboard(models.AbstractModel):
         dt = fields.Date.from_string(date_to)
         sales, profit, cost = self._sum_orders(self._shop_sale_domain(df, dt))
         trend = self.get_sales_trend.__func__  # avoid re-query; use raw SQL below
+        # Pre-populate all dates in the range with zero values to show flat lines on zero-activity days
+        daily_map = {}
+        curr = df
+        while curr <= dt:
+            daily_map[str(curr)] = {
+                'date': str(curr),
+                'sales': 0.0,
+                'profit': 0.0,
+                'invoices': 0,
+                'customers': 0,
+            }
+            curr += timedelta(days=1)
+
         self.env.cr.execute(
             """
             SELECT
@@ -516,16 +565,17 @@ class AgroDashboard(models.AbstractModel):
             """,
             [df, dt]
         )
-        daily = [
-            {
-                'date': str(r[0]),
-                'sales': float(r[1] or 0),
-                'profit': float(r[2] or 0),
-                'invoices': int(r[3] or 0),
-                'customers': int(r[4] or 0),
-            }
-            for r in self.env.cr.fetchall()
-        ]
+        for r in self.env.cr.fetchall():
+            d_str = str(r[0])
+            if d_str in daily_map:
+                daily_map[d_str].update({
+                    'sales': float(r[1] or 0),
+                    'profit': float(r[2] or 0),
+                    'invoices': int(r[3] or 0),
+                    'customers': int(r[4] or 0),
+                })
+        
+        daily = [daily_map[k] for k in sorted(daily_map.keys())]
         return {
             'date_from': str(df),
             'date_to': str(dt),
