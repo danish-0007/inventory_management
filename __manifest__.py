@@ -43,8 +43,8 @@
     ],
     'assets': {
         'web.assets_backend': [
-            # Chart.js from CDN — loaded before our JS
-            'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js',
+            # Chart.js local file — loaded before our JS
+            'inventory_management/static/src/js/chart.umd.min.js',
             'inventory_management/static/src/css/agro_dashboard.css',
             'inventory_management/static/src/xml/agro_dashboard_templates.xml',
             'inventory_management/static/src/js/agro_dashboard.js',
